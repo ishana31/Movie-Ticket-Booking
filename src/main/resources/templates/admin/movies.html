@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Movies - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+    <style>
+        :root {
+            --primary: #ff3366;
+            --secondary: #ffcc00;
+            --dark: #0a0a2a;
+            --light: #f8f9fa;
+            --admin-dark-bg: #1c1c3a;
+            --admin-light-bg: #e9ecef;
+            --admin-card-bg: #ffffff;
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 70px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--admin-light-bg);
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            height: 100vh;
+            background-color: var(--admin-dark-bg);
+            color: white;
+            position: fixed;
+            width: var(--sidebar-width);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding-top: 20px;
+        }
+
+        .sidebar .logo {
+            padding: 0 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h3 {
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.6rem;
+        }
+
+        .sidebar .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 8px 15px;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(45deg, var(--primary), #ff6b3d);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transform: scale(1.02);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), #ff6b3d);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+            color: white;
+        }
+
+        .search-bar {
+            position: relative;
+            max-width: 400px;
+            flex-grow: 1;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .search-bar input {
+            padding-left: 40px;
+            border-radius: 25px;
+            border: 1px solid #ced4da;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Movie Grid */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 0 0 30px 0;
+        }
+
+        .movie-card {
+            background: var(--admin-card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.4s ease-in-out;
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .movie-poster-container {
+            position: relative;
+            width: 100%;
+            padding-top: 150%;
+            overflow: hidden;
+        }
+
+        .movie-poster-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .movie-card:hover .movie-poster-img {
+            transform: scale(1.15);
+        }
+
+        .movie-info {
+        	display: none;
+            padding: 18px;
+            color: #343a40;
+            position: relative;
+            z-index: 2;
+        }
+
+        .movie-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--dark);
+        }
+
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+
+        .movie-meta span {
+            padding: 5px 12px;
+            border-radius: 25px;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+        }
+
+        /* No results message */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed);
+            }
+            
+            .sidebar .logo h3, .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed);
+                padding: 20px;
+            }
+            
+            .movie-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-auto sidebar">
+            <div class="logo">
+                <h3><i class="bi bi-film"></i>Namma Tickets</h3>
+            </div>
+            <nav class="nav flex-column">
+                <a href="/admin/dashboard" class="nav-link"><i class="bi bi-speedometer2"></i><span> Dashboard</span></a>
+                <a href="/admin/movies" class="nav-link active"><i class="bi bi-film"></i><span> Movies</span></a>
+                <a href="/admin/shows" class="nav-link"><i class="bi bi-calendar-event"></i><span> Shows</span></a>
+                <a href="/admin/bookings" class="nav-link"><i class="bi bi-ticket-perforated"></i><span> Bookings</span></a>
+                <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i><span> Logout</span></a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col main-content">
+            <div class="page-header">
+                <h1><i class="bi bi-film me-2"></i>All Movies</h1>
+                <div class="d-flex gap-2">
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search movies..." aria-label="Search movies">
+                    </div>
+                    <a href="/admin/movies/add" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-2"></i>Add Movie
+                    </a>
+                </div>
+            </div>
+            
+            <div class="movie-grid" id="moviesContainer">
+                <!-- Movie cards will be populated here -->
+                <div class="movie-card" th:each="movie : ${movies}" th:data-movie-id="${movie.id}">
+                    <div class="movie-poster-container">
+                        <img class="movie-poster-img" th:src="@{'/admin/movies/image/' + ${movie.id}}" th:alt="${movie.title}" 
+                             onerror="this.src='https://via.placeholder.com/400x600?text=No+Poster'">
+                        <div class="movie-actions-overlay">
+                            <a th:href="@{'/admin/movies/edit/' + ${movie.id}}" class="btn btn-edit">
+                                <i class="bi bi-pencil me-2"></i>Edit
+                            </a>
+                            <a th:href="@{'/admin/movies/delete/' + ${movie.id}}" class="btn btn-delete">
+                                <i class="bi bi-trash me-2"></i>Delete
+                            </a>
+                        </div>
+                    </div>
+                    <div class="movie-info">
+                        <h3 class="movie-title" th:text="${movie.title}">Movie Title</h3>
+                        <div class="movie-meta">
+                            <span th:text="${movie.genre}">Genre</span>
+                            <span th:text="${movie.duration + ' min'}">120 min</span>
+                            <span th:text="${movie.language}">Language</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Click handler for movie cards
+        $('.movie-card').on('click', function(e) {
+            // Only navigate if the click wasn't on a button inside the overlay
+            if (!$(e.target).closest('.movie-actions-overlay').length) {
+                window.location.href = '/admin/movies/edit/' + $(this).data('movie-id');
+            }
+        });
+
+        // Live search functionality
+        $('#searchInput').on('input', function() {
+            const query = $(this).val().toLowerCase().trim();
+            let hasResults = false;
+            
+            $('.movie-card').each(function() {
+                const title = $(this).find('.movie-title').text().toLowerCase();
+                const genre = $(this).find('.movie-meta span:first-child').text().toLowerCase();
+                
+                if (title.includes(query) || genre.includes(query)) {
+                    $(this).show();
+                    hasResults = true;
+                } else {
+                    $(this).hide();
+                }
+            });
+            
+            // Show no results message if needed
+            if (!hasResults) {
+                if ($('#noResults').length === 0) {
+                    $('#moviesContainer').append(
+                        '<div class="no-results" id="noResults">' +
+                        '<i class="bi bi-search" style="font-size: 2rem; margin-bottom: 15px;"></i>' +
+                        '<p>No movies found matching your search</p>' +
+                        '</div>'
+                    );
+                }
+            } else {
+                $('#noResults').remove();
+            }
+        });
+    });
+</script>
+</body>
+</html>

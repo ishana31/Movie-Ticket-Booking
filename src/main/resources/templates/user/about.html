@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Namma Tickets - About Us</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+
+<style>
+    :root {
+      --primary: #ff3366;
+      --secondary: #ffcc00;
+      --accent: #00ccff;
+      --dark: #0a0a2a;
+      --light: #f8f9fa;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(rgba(10, 10, 42, 0.95), rgba(10, 10, 42, 0.9)), 
+                  url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover fixed;
+      font-family: 'Poppins', Tahoma, Geneva, Helvetica, sans-serif;
+      color: var(--text-primary);
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-top: 70px;
+    }
+    
+    /* Custom scrollbar */
+    body::-webkit-scrollbar {
+      width: 10px;
+    }
+    body::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+    body::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Film strip decorations */
+    .film-strip {
+      position: absolute;
+      height: 50px;
+      width: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.7),
+        rgba(0, 0, 0, 0.7) 20px,
+        rgba(255, 255, 255, 0.2) 20px,
+        rgba(255, 255, 255, 0.2) 40px
+      );
+      z-index: -1;
+    }
+    .film-strip.top {
+      top: 0;
+    }
+    .film-strip.bottom {
+      bottom: 0;
+    }
+    
+    /* Header Styles */
+    .navbar {
+	background-color: rgba(10, 10, 42, 0.9);
+	height: var(--header-height);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	backdrop-filter: blur(10px);
+	padding: 0 2rem;
+	border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+}
+
+.navbar-brand {
+	font-size: 1.6rem;
+	font-weight: 700;
+	position: relative;
+	display: inline-block;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.navbar-brand i {
+	color: var(--secondary);
+	margin-right: 10px;
+	font-size: 1.8rem;
+}
+
+.nav-link {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 6px;
+	margin: 0 5px;
+	border-radius: 6px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+}
+
+.nav-link i {
+	margin-right: 8px;
+	font-size: 1.1rem;
+}
+
+.nav-link:hover, .nav-link.active {
+	color: white;
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+}
+
+.user-avatar {
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	transition: all 0.3s ease;
+}
+
+.dropdown:hover .user-avatar {
+	border-color: var(--secondary);
+	transform: scale(1.05);
+}
+
+.dropdown-menu {
+	background-color: rgba(10, 10, 42, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 8px 16px;
+	transition: all 0.3s;
+}
+
+.dropdown-item:hover {
+	color: white;
+	background-color: rgba(255, 255, 255, 0.1);
+	padding-left: 20px;
+}
+
+.dropdown-item i {
+	width: 20px;
+	text-align: center;
+	margin-right: 10px;
+	color: var(--secondary);
+}
+
+.btn-primary {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+	padding: 10px 20px;
+	border-radius: 50px;
+	font-weight: 600;
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+	transition: all 0.3s;
+}
+
+.btn-primary:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+}
+
+    /* Main Content */
+    .main-container {
+      padding: 2rem;
+      min-height: calc(100vh - 70px);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* About Section */
+    .about-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--secondary);
+      text-align: center;
+      position: relative;
+      display: inline-block;
+      padding-bottom: 0.75rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      border-radius: 2px;
+    }
+    
+    .about-content {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .about-image {
+      flex: 0 0 40%;
+      max-width: 500px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .about-image img {
+      width: 100%;
+      height: auto;
+      transition: transform 0.5s ease;
+    }
+    
+    .about-image:hover img {
+      transform: scale(1.05);
+    }
+    
+    .about-text {
+      flex: 1;
+    }
+    
+    .about-text p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      color: var(--text-secondary);
+    }
+    
+    .mission-statement {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 2rem 0;
+    }
+    
+    .mission-statement h3 {
+      color: var(--secondary);
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      min-width: 200px;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-item:hover {
+      transform: translateY(-10px);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+    
+    /* Team Section */
+    .team-section {
+      margin-top: 2rem;
+    }
+    
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .team-member {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .team-member:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border-color: var(--secondary);
+    }
+    
+    .member-photo {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .member-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .team-member:hover .member-photo img {
+      transform: scale(1.1);
+    }
+    
+    .member-info {
+      padding: 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .member-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .member-role {
+      color: var(--secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    
+    .member-bio {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+    
+    .social-links a {
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+    }
+    
+    .social-links a:hover {
+      color: var(--secondary);
+      transform: translateY(-3px);
+    }
+    
+    /* Footer */
+    .footer {
+	background: rgba(10, 10, 42, 0.9);
+	color: white;
+	padding: 3rem 0;
+	margin-top: 3rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-logo {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+}
+
+.footer-logo i {
+	color: var(--secondary);
+	margin-right: 10px;
+}
+
+.footer p {
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: 1.5rem;
+}
+
+.footer-links h5 {
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin-bottom: 1.5rem;
+	position: relative;
+	color: white;
+}
+
+.footer-links h5::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	left: 0;
+	width: 40px;
+	height: 3px;
+	background: linear-gradient(45deg, var(--primary), var(--secondary));
+	border-radius: 2px;
+}
+
+.footer-links ul {
+	list-style: none;
+	padding: 0;
+}
+
+.footer-links li {
+	margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+	color: rgba(255, 255, 255, 0.7);
+	text-decoration: none;
+	transition: all 0.3s;
+}
+
+.footer-links a:hover {
+	color: var(--secondary);
+	padding-left: 5px;
+}
+
+.social-links a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 50%;
+	color: white;
+	margin-right: 10px;
+	transition: all 0.3s;
+}
+
+.social-links a:hover {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	transform: translateY(-3px);
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.3);
+}
+
+.copyright {
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	padding-top: 1.5rem;
+	margin-top: 2rem;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 0.9rem;
+}
+
+/* Custom Modal */
+.custom-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 2000;
+	justify-content: center;
+	align-items: center;
+	backdrop-filter: blur(5px);
+}
+
+.modal-content {
+	background: rgba(10, 10, 42, 0.95);
+	padding: 2rem;
+	border-radius: 15px;
+	max-width: 400px;
+	width: 90%;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	animation: modalFadeIn 0.3s;
+	color: white;
+}
+    
+    .modal-content::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,204,0,0.05) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+        z-index: -1;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes modalFadeIn {
+        from { 
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Floating movie icons with professional cinematic effect */
+    .floating-icon {
+        position: absolute;
+        opacity: 0.8;
+        z-index: -1;
+        filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.5));
+        animation: float 8s infinite ease-in-out;
+        transform-origin: center center;
+    }
+    
+    .floating-icon i {
+        font-size: 2.5rem;
+        color: var(--secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .floating-icon:hover i {
+        color: var(--primary);
+        transform: scale(1.2) rotate(15deg);
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        25% {
+            transform: translateY(-15px) rotate(5deg);
+        }
+        50% {
+            transform: translateY(0) rotate(0deg);
+        }
+        75% {
+            transform: translateY(15px) rotate(-5deg);
+        }
+    }
+    
+    /* Cinema lights with professional effect */
+    .cinema-light {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,204,0,0.15) 0%, transparent 70%);
+        filter: blur(20px);
+        z-index: -1;
+        animation: pulse 4s infinite alternate;
+    }
+    
+    @keyframes pulse {
+        0% { 
+            opacity: 0.3; 
+            transform: scale(1);
+        }
+        100% { 
+            opacity: 0.7; 
+            transform: scale(1.2);
+        }
+    }
+    
+    /* Entrance animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInDown {
+        from { 
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes modalFadeIn {
+        from { 
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .about-content {
+            flex-direction: column;
+        }
+        
+        .about-image {
+            max-width: 100%;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-container {
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            min-width: 150px;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-links {
+            margin-bottom: 2rem;
+        }
+        
+        .footer-links h5::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .social-links {
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .navbar-brand {
+            font-size: 1.4rem;
+        }
+        
+        .nav-link {
+            padding: 8px 15px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+        }
+        
+        .member-photo {
+            height: 180px;
+        }
+        
+        .footer {
+            text-align: center;
+        }
+    }
+</style>
+</head>
+<body>
+    <!-- Film strip decorations -->
+    <div class="film-strip top"></div>
+    <div class="film-strip bottom"></div>
+    
+    <!-- Cinema lights -->
+    <div class="cinema-light" style="top: 15%; left: 10%;"></div>
+    <div class="cinema-light" style="top: 25%; right: 15%;"></div>
+    <div class="cinema-light" style="bottom: 20%; left: 20%;"></div>
+    <div class="cinema-light" style="bottom: 30%; right: 10%;"></div>
+    
+    <!-- Floating icons with cinematic effect -->
+    <div class="floating-icon" style="top: 15%; left: 10%; animation-delay: 0s;">
+        <i class="fas fa-film"></i>
+    </div>
+    <div class="floating-icon" style="top: 80%; left: 15%; animation-delay: 1s;">
+        <i class="fas fa-ticket-alt"></i>
+    </div>
+    <div class="floating-icon" style="top: 30%; right: 10%; animation-delay: 2s;">
+        <i class="fas fa-star"></i>
+    </div>
+    <div class="floating-icon" style="top: 60%; right: 15%; animation-delay: 3s;">
+        <i class="fas fa-video"></i>
+    </div>
+    <div class="floating-icon" style="top: 40%; left: 85%; animation-delay: 4s;">
+        <i class="fas fa-clapperboard"></i>
+    </div>
+    <div class="floating-icon" style="bottom: 20%; left: 25%; animation-delay: 5s;">
+        <i class="fas fa-award"></i>
+    </div>
+    <div class="floating-icon" style="bottom: 40%; right: 25%; animation-delay: 6s;">
+        <i class="fas fa-heart"></i>
+    </div>
+    <div class="floating-icon" style="top: 70%; left: 75%; animation-delay: 7s;">
+        <i class="fas fa-crown"></i>
+    </div>
+    
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark d-flex">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/user/movies"> <i
+				class="bi bi-film"></i>Namma Tickets
+			</a>
+
+			<button class="navbar-toggler" data-bs-toggle="collapse"
+				data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse mx-3 justify-content-evenly"
+				id="navbarNav">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item"><a class="nav-link"
+						href="/user/all-movies"> <i class="bi bi-film"></i> All Movies
+					</a></li>
+					<li class="nav-item"><a class="nav-link"
+						href="/user/my-bookings"> <i class="bi bi-ticket-perforated"></i>
+							My Bookings
+					</a></li>
+					<li class="nav-item"><a class="nav-link" href="/user/about"> <i
+							class="bi bi-info-circle"></i> About
+					</a></li>
+					<li class="nav-item"><a class="nav-link" href="/user/contact">
+							<i class="bi bi-envelope"></i> Contact
+					</a></li>
+				</ul>
+
+				<div class="dropdown">
+					<a href="#" class="d-flex align-items-center text-decoration-none"
+						id="userDropdown" data-bs-toggle="dropdown"> <img
+						th:src="@{'/user/image/' + ${user.id}}" class="user-avatar"
+						onerror="this.src='https://via.placeholder.com/150x150?text=No+Image'">
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li><a class="dropdown-item" href="/user/profile"> <i
+								class="bi bi-person"></i> Profile
+						</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="#" id="logoutBtn"> <i
+								class="bi bi-box-arrow-right"></i> Logout
+						</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</nav>
+	
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="about-section">
+            <h2 class="section-title animate__animated animate__fadeInDown">Namma Tickets</h2>
+            
+            <div class="about-content animate__animated animate__fadeInUp">
+                <div class="about-image">
+                    <img src="https://picsum.photos/seed/moviematic/800/500.jpg" alt="MovieMatic Office" class="img-fluid">
+                </div>
+                <div class="about-text">
+                    <p>Welcome to Namma Tickets, your premier destination for all things cinema! Founded in 2025, we're passionate about bringing the magic of movies to audiences everywhere. Our platform offers seamless movie ticket booking, personalized recommendations, and a vibrant community of film enthusiasts.</p>
+                    <p>At Namma Tickets, we believe that movies have the power to inspire, entertain, and transform lives. That's why we're dedicated to providing an exceptional movie-going experience, both online and in theaters.</p>
+                    
+                    <div class="mission-statement">
+                        <h3>Our Mission</h3>
+                        <p>To connect movie lovers with incredible cinematic experiences through innovative technology and exceptional service.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-container animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="stat-item">
+                    <div class="stat-number">5M+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Movies Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Theaters Partnered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Customer Support</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="team-section">
+            <h2 class="section-title animate__animated animate__fadeInDown animate__delay-1s">Our Team</h2>
+            
+            <div class="team-grid animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="https://picsum.photos/seed/ceo/400/400.jpg" alt="CEO">
+                    </div>
+                    <div class="member-info">
+                        <h5 class="member-name">Ishana Pujara</h5>
+                        <div class="member-role">Founder & CEO</div>
+                        <p class="member-bio">Leading our vision with passion and innovation.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="bi bi-linkedin"></i></a>
+                            <a href="#"><i class="bi bi-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="https://picsum.photos/seed/cto/400/400.jpg" alt="CTO">
+                    </div>
+                    <div class="member-info">
+                        <h5 class="member-name">Shreya Srivatsa</h5>
+                        <div class="member-role">Chief Technology Officer</div>
+                        <p class="member-bio">Shreya brings cutting-edge technology solutions to our platform, ensuring seamless user experiences.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="bi bi-linkedin"></i></a>
+                            <a href="#"><i class="bi bi-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="https://picsum.photos/seed/cmo/400/400.jpg" alt="CMO">
+                    </div>
+                    <div class="member-info">
+                        <h5 class="member-name">Dharani</h5>
+                        <div class="member-role">Chief Marketing Officer</div>
+                        <p class="member-bio">Dharani crafts our brand story and connects us with movie enthusiasts worldwide.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="bi bi-instagram"></i></a>
+                            <a href="#"><i class="bi bi-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="https://picsum.photos/seed/cfo/400/400.jpg" alt="CFO">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="footer-logo">
+                        <i class="bi bi-film"></i> Namma Tickets
+                    </div>
+                    <p>Book your movie tickets online and enjoy the latest blockbusters in theaters near you.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i
+                            class="bi bi-twitter"></i></a> <a href="#"><i
+                            class="bi bi-instagram"></i></a> <a href="#"><i
+                            class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="footer-links">
+                        <h5>Company</h5>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms & Conditions</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="footer-links">
+                        <h5>Help</h5>
+                        <ul>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Booking Guide</a></li>
+                            <li><a href="#">Cancellation Policy</a></li>
+                            <li><a href="#">Refund Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="footer-links">
+                        <h5>Newsletter</h5>
+                        <p>Subscribe to our newsletter for the latest movie updates and offers.</p>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email">
+                            <button class="btn btn-primary" type="button">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">&copy; 2023 Namma Tickets. All Rights Reserved.</div>
+        </div>
+    </footer>
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="custom-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="bi bi-box-arrow-right"></i>
+                <h5 class="modal-title">Confirm Logout</h5>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to logout?</p>
+            </div>
+            <div class="modal-buttons">
+                <button id="logoutNo" class="btn btn-outline-secondary">Cancel</button>
+                <button id="logoutYes" class="btn btn-primary">Yes, Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            // Highlight current page in navbar
+            $('.nav-link').each(function() {
+                if ($(this).attr('href') === window.location.pathname) {
+                    $(this).addClass('active');
+                } else {
+                    $(this).removeClass('active');
+                }
+            });
+            
+            // Logout functionality
+            const logoutModal = document.getElementById('logoutModal');
+            
+            document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                logoutModal.style.display = 'flex';
+            });
+            
+            document.getElementById('logoutNo')?.addEventListener('click', function() {
+                logoutModal.style.display = 'none';
+            });
+            
+            document.getElementById('logoutYes')?.addEventListener('click', function() {
+                window.location.href = '/logout';
+            });
+            
+            // Close modal when clicking outside
+            logoutModal?.addEventListener('click', function(e) {
+                if (e.target === logoutModal) {
+                    logoutModal.style.display = 'none';
+                }
+            });
+            
+            // Close modal with ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && logoutModal.style.display === 'flex') {
+                    logoutModal.style.display = 'none';
+                }
+            });
+            
+            // Particle animation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.modal-content') || e.target.closest('.navbar')) return;
+                
+                const particles = document.createElement('div');
+                particles.className = 'particle';
+                document.body.appendChild(particles);
+                
+                particles.style.left = e.clientX + 'px';
+                particles.style.top = e.clientY + 'px';
+                
+                const size = Math.random() * 15 + 5;
+                particles.style.width = size + 'px';
+                particles.style.height = size + 'px';
+                
+                const colors = ['#ff3366', '#ffcc00', '#ffffff', '#4dabf7'];
+                particles.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particles.animate([
+                    { transform: 'translate(0, 0)', opacity: 1 },
+                    { transform: `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out',
+                    fill: 'forwards'
+                });
+                
+                particles.addEventListener('animationend', () => particles.remove());
+            });
+        });
+    </script>
+</body>
+</html>

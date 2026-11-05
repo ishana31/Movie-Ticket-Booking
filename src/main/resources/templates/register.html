@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register</title>
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+<style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+ 
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin: 1rem;
+        }
+ 
+        .form-title {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #212529;
+            font-weight: 600;
+        }
+ 
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+ 
+        .form-control {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            height: auto;
+        }
+ 
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem #2b2d42;
+        }
+ 
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-top: 1rem;
+            background-color: #2b2d42;
+            border: none;
+            transition: all 0.3s ease;
+        }
+ 
+        .submit-btn:hover {
+            background: linear-gradient(45deg, #ff3366, #ff6b3d);
+            transform: translateY(-2px);
+        }
+ 
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+ 
+        .form-footer a {
+            color: #2b2d42;
+            text-decoration: none;
+            font-weight: 500;
+        }
+ 
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+ 
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.25rem;
+        }
+ 
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .auth-container {
+                margin: 0.5rem;
+                padding: 1.5rem;
+            }
+            .form-group {
+                margin-bottom: 1rem;
+            }
+        }
+ 
+        /* Input focus enhancement */
+        .input-group:focus-within .input-group-text {
+            background-color: #f8f9fa;
+        }
+ 
+        /* Animation for form elements */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+ 
+        .form-group {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+ 
+        /* Adjust animation delays based on remaining fields */
+        .form-group:nth-child(1) { animation-delay: 0.1s; } /* For name */
+        .form-group:nth-child(2) { animation-delay: 0.2s; } /* For email */
+        .form-group:nth-child(3) { animation-delay: 0.3s; } /* For role */
+        .form-group:nth-child(4) { animation-delay: 0.4s; } /* For password */
+</style>
+</head>
+<body>
+<div class="auth-container">
+<form action="/register" method="POST" th:object="${user}">
+<h2 class="form-title">Register</h2>
+<div th:if="${error}" 
+                 class="alert alert-danger d-flex align-items-center" role="alert">
+<i class="bi bi-exclamation-triangle-fill me-2"></i> 
+<span th:text="${error}"></span>
+</div>
+<div class="form-group">
+<label for="name" class="form-label">Full Name</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-person"></i></span>
+<input type="text" class="form-control" id="name" name="name"
+                           placeholder="Enter your name" required th:field="*{name}" />
+</div>
+</div>
+<div class="form-group">
+<label for="email" class="form-label">Email</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-envelope"></i></span>
+<input type="email" class="form-control" id="email" name="email"
+                           placeholder="Enter your email" required th:field="*{email}" />
+</div>
+</div>
+<div class="form-group">
+<label for="role" class="form-label">Role</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+<select class="form-select" id="role" name="role" required
+                            th:field="*{role}">
+<option value="" disabled selected>Select your role</option>
+<option value="USER">User</option>
+<option value="ADMIN">Admin</option>
+</select>
+</div>
+</div>
+ 
+            <div class="form-group">
+<label for="password" class="form-label">Password</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-lock"></i></span> 
+<input type="password" class="form-control" id="password" name="password"
+                           placeholder="Enter password" minlength="6" required
+                           th:field="*{password}" />
+</div>
+<div class="form-text">Password must be at least 6 characters long.</div>
+</div>
+<div class="d-grid gap-2">
+<button type="submit" class="btn btn-primary submit-btn" onClick = "sendEmailNotification()">
+<i class="bi bi-person-plus me-2"></i>Register
+</button>
+</div>
+<div class="form-footer">
+                Already have an account? <a href="/login">Login</a>
+</div>
+</form>
+</div>
+<script>
+    const sendEmailNotification = () => {
+            const email = document.querySelector('input[name="email"]').value;
+            fetch('http://localhost:8080/mail/sendEmail', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+            })
+            .then((response) => {
+            if (response.ok) {
+            console.log('Email sent successfully');
+            } else {
+            console.error('Failed to send email');
+            }
+            })
+            .catch((error) => {
+            console.error('Error sending email:', error);
+            });
+	};
+</script>
+<!-- Bootstrap 5 JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script…
+</body>
+</html>

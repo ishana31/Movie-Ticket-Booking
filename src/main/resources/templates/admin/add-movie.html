@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:text="${movie.id != null} ? 'Edit Movie' : 'Add Movie'"></title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+	<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+<style>
+:root {
+    --primary: #ff3366;
+    --primary-light: #ff6b8b;
+    --primary-dark: #e91e63;
+    --secondary: #ffcc00;
+    --admin-dark-bg: #1c1c3a;
+    --sidebar-width: 250px;
+    --sidebar-collapsed: 70px;
+    --transition: all 0.3s ease;
+}
+
+body {
+	background-color: var(--light-bg);
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Sidebar Styles */
+.sidebar {
+            height: 100vh;
+            background-color: var(--admin-dark-bg);
+            color: white;
+            position: fixed;
+            width: var(--sidebar-width);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding-top: 20px;
+            transition: var(--transition);
+        }
+
+        .sidebar .logo {
+            padding: 0 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h3 {
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.6rem;
+            transition: var(--transition);
+        }
+
+        .sidebar .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.8rem;
+            transition: var(--transition);
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: 8px;
+            margin: 8px 15px;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(45deg, var(--primary), #ff6b3d);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transform: scale(1.02);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+/* Main Content */
+.main-content {
+	margin-left: var(--sidebar-width);
+	padding: 30px;
+}
+
+.form-container {
+	background-color: white;
+	border-radius: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+	padding: 30px;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+/* Poster Preview */
+.poster-preview-container {
+	width: 100%;
+	height: 400px;
+	background-color: #f8f9fa;
+	border: 2px dashed #ced4da;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	margin-bottom: 20px;
+	position: relative;
+}
+
+.poster-preview-img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.delete-poster-btn {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	z-index: 10;
+}
+
+/* Form Elements */
+.form-label {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.form-control:focus {
+	border-color: var(--primary-color);
+	box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+/* Buttons */
+/* Delete Button - Red */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Save Button - Dark Blue */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Responsive */
+@media ( max-width : 768px) {
+	.main-content {
+		padding: 20px;
+	}
+	.form-container {
+		padding: 20px;
+	}
+	.poster-preview-container {
+		height: 300px;
+	}
+}
+</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-auto sidebar">
+            <div class="logo">
+                <h3><i class="bi bi-film"></i>Namma Tickets</h3>
+            </div>
+            <nav class="nav flex-column">
+                <a href="/admin/dashboard" class="nav-link"><i class="bi bi-speedometer2"></i><span> Dashboard</span></a>
+                <a href="/admin/movies" class="nav-link active"><i class="bi bi-film"></i><span> Movies</span></a>
+                <a href="/admin/shows" class="nav-link"><i class="bi bi-calendar-event"></i><span> Shows</span></a>
+                <a href="/admin/bookings" class="nav-link"><i class="bi bi-ticket-perforated"></i><span> Bookings</span></a>
+                <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i><span> Logout</span></a>
+            </nav>
+			</div>
+
+			<div class="col-md-10 main-content">
+				<div class="d-flex justify-content-between align-items-center mb-4">
+					<h2 th:text="${movie.id != null} ? 'Edit Movie' : 'Add Movie'"></h2>
+					<a href="/admin/movies" class="btn btn-outline-secondary"><i
+						class="bi bi-arrow-left me-2"></i>Back</a>
+				</div>
+
+				<div class="form-container">
+					<form th:action="@{/admin/movies/save}" method="post"
+						th:object="${movie}" enctype="multipart/form-data">
+
+						<input type="hidden" th:field="*{id}">
+
+						<!-- Movie Poster Upload -->
+						<div class="mb-4">
+							<label class="form-label">Movie Poster</label>
+							<div class="poster-preview-container">
+								<img id="posterPreview" th:if="${movie.id != null}"
+									th:src="@{'/admin/movies/image/' + ${movie.id}}"
+									class="poster-preview-img">
+								<div id="noPoster" th:unless="${movie.id != null}">
+									<div class="text-center text-muted">
+										<i class="bi bi-image" style="font-size: 3rem;"></i>
+										<p>Upload Poster</p>
+									</div>
+								</div>
+							</div>
+							<input type="file" class="form-control" name="image"
+								id="posterInput" accept="image/*">
+						</div>
+
+						<!-- Background Upload -->
+						<div class="mb-4">
+							<label class="form-label">Movie Background (16:9)</label>
+							<div class="poster-preview-container">
+								<img id="bgPreview" th:if="${movie.id != null}"
+									th:src="@{'/admin/movies/background/' + ${movie.id}}"
+									class="poster-preview-img">
+								<div id="noBgPoster" th:unless="${movie.id != null}">
+									<div class="text-center text-muted">
+										<i class="bi bi-image" style="font-size: 3rem;"></i>
+										<p>Upload Background</p>
+									</div>
+								</div>
+							</div>
+							<input type="file" class="form-control" name="background"
+								id="bgInput" accept="image/*">
+						</div>
+
+						<!-- Title -->
+						<div class="mb-3">
+							<label>Title</label> <input type="text" th:field="*{title}"
+								class="form-control" required>
+						</div>
+
+						<!-- Genre & Language -->
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label>Genre</label> <select th:field="*{genre}"
+									class="form-control" required>
+									<option value="">-- Select Genre --</option>
+									<option value="Action">Action</option>
+									<option value="Comedy">Comedy</option>
+									<option value="Drama">Drama</option>
+									<option value="Horror">Horror</option>
+									<option value="Romance">Romance</option>
+									<option value="Thriller">Thriller</option>
+									<option value="Animation">Animation</option>
+									<option value="Sci-Fi">Sci-Fi</option>
+								</select>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label>Language</label> <select th:field="*{language}"
+									class="form-control" required>
+									<option value="">-- Select Language --</option>
+									<option value="English">English</option>
+									<option value="Hindi">Hindi</option>
+									<option value="Marathi">Marathi</option>
+									<option value="Tamil">Tamil</option>
+									<option value="Telugu">Telugu</option>
+									<option value="Kannada">Kannada</option>
+									<option value="Malayalam">Malayalam</option>
+									<option value="Punjabi">Punjabi</option>
+									<option value="Gujarati">Gujarati</option>
+								</select>
+							</div>
+						</div>
+
+						<!-- Release Date & Duration -->
+						<div class="row">
+							<div class="col-md-6 mb-3">
+								<label>Release Date</label> <input type="date"
+									th:field="*{releaseDate}" class="form-control" required>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label>Duration (minutes)</label> <input type="number"
+									th:field="*{duration}" class="form-control" min="1" required>
+							</div>
+						</div>
+
+						<!-- Description -->
+						<div class="mb-3">
+							<label>Description</label>
+							<textarea th:field="*{description}" class="form-control" rows="5"></textarea>
+						</div>
+
+						<!-- Buttons -->
+						<div class="d-flex justify-content-end mt-4">
+							<a th:href="@{'/admin/movies/delete/' + ${movie.id}}"
+								class="btn btn-danger me-2" th:if="${movie.id != null}"
+								onclick="return confirm('Are you sure?')"> <i
+								class="bi bi-trash me-2"></i>Delete
+							</a>
+							<button type="submit" class="btn btn-primary px-4">
+								<i class="bi bi-save me-2"></i>Save
+							</button>
+						</div>
+					</form>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document
+				.getElementById("posterInput")
+				.addEventListener(
+						"change",
+						function(event) {
+							const file = event.target.files[0];
+							if (file) {
+								const reader = new FileReader();
+								reader.onload = function(e) {
+									let preview = document
+											.getElementById("posterPreview");
+									if (!preview) {
+										preview = document.createElement("img");
+										preview.id = "posterPreview";
+										preview.className = "poster-preview-img";
+										document
+												.querySelector(".poster-preview-container").innerHTML = "";
+										document.querySelector(
+												".poster-preview-container")
+												.appendChild(preview);
+									}
+									preview.src = e.target.result;
+								}
+								reader.readAsDataURL(file);
+							}
+						})
+
+	document.getElementById("bgInput").addEventListener("change", function(event) {
+		const file = event.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				let preview = document.getElementById("bgPreview");
+				if (!preview) {
+					preview = document.createElement("img");
+					preview.id = "bgPreview";
+					preview.className = "poster-preview-img";
+					document.querySelector("#noBgPoster").remove();
+					document.querySelectorAll(".poster-preview-container")[1].appendChild(preview);
+				}
+				preview.src = e.target.result;
+			}
+			reader.readAsDataURL(file);
+		}
+	});
+</script>
+
+	</script>
+</body>
+</html>

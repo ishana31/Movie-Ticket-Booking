@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bookings - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+    <style>
+        :root {
+	--primary: #ff3366; /* Main accent color */
+	--secondary: #ffcc00; /* Secondary accent color */
+	--dark: #0a0a2a; /* Dark background from original */
+	--light: #f8f9fa; /* Light background */
+	--header-height: 60px; /* From original theme */
+
+	/* Admin specific adjustments or overrides */
+	--admin-dark-bg: #1c1c3a; /* Slightly lighter dark than original --dark for admin sidebar */
+	--admin-light-bg: #e9ecef; /* Light background for main content */
+	--admin-card-bg: #ffffff; /* Card background */
+	--admin-text-color: #343a40; /* Darker text for readability on light bg */
+	--admin-border-color: rgba(255, 255, 255, 0.1);
+	
+	--sidebar-width: 250px;
+	--sidebar-collapsed: 70px; /* For borders, from original theme style */
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	background-color: var(--admin-light-bg);
+	color: var(--admin-text-color);
+	min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+	height: 100vh;
+	background-color: var(--admin-dark-bg);
+	color: white;
+	position: fixed;
+	width: 250px;
+	z-index: 1000;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow from original theme */
+	padding-top: 20px; /* Add some padding at the top */
+}
+
+.sidebar .logo {
+	padding: 0 15px 20px; /* Adjusted padding */
+	border-bottom: 1px solid var(--admin-border-color); /* From original theme */
+	margin-bottom: 20px;
+}
+
+.sidebar .logo h3 {
+	margin: 0;
+	font-weight: 700; /* Bolder font weight */
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-size: 1.6rem;
+}
+
+.sidebar .logo i {
+	color: var(--secondary);
+	margin-right: 10px;
+	font-size: 1.8rem;
+}
+
+.sidebar .nav-link {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 12px 20px;
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+	transition: all 0.3s ease;
+	border-radius: 8px; /* Slightly more rounded */
+	margin: 8px 15px; /* Adjusted margin */
+	font-weight: 500;
+}
+
+.sidebar .nav-link:hover {
+	color: white;
+	background-color: rgba(255, 255, 255, 0.1);
+	transform: translateX(3px); /* Subtle hover effect */
+}
+
+.sidebar .nav-link.active {
+	color: white;
+	background: linear-gradient(45deg, var(--primary), #ff6b3d); /* Gradient from original theme */
+	box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4); /* Shadow from original theme */
+	transform: scale(1.02); /* Slight scale on active */
+}
+
+.sidebar .nav-link i {
+	margin-right: 12px;
+	font-size: 1.2rem; /* Slightly larger icons */
+}
+
+        
+        /* Main Content */
+        .main-content {
+	margin-left: 250px; /* Matches sidebar width */
+	padding: 30px;
+	min-height: 100vh;
+	transition: all 0.3s ease;
+}
+
+.page-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 30px;
+	flex-wrap: wrap;
+	gap: 15px;
+}
+
+.page-header h1 {
+	font-weight: 700;
+	font-size: 2rem; /* Larger heading */
+	margin: 0;
+	color: var(--dark); /* Use a darker color for headings on light background */
+	position: relative;
+	display: inline-block;
+}
+
+.page-header h1::after {
+	content: '';
+	position: absolute;
+	bottom: -10px;
+	left: 0;
+	width: 60px;
+	height: 4px;
+	background: linear-gradient(45deg, var(--primary), var(--secondary));
+	border-radius: 2px;
+}
+        
+        .btn-primary {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+	padding: 10px 20px;
+	border-radius: 50px; /* Pill-shaped button */
+	font-weight: 600;
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+	transition: all 0.3s;
+}
+
+.btn-primary:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+	color: white; /* Ensure text remains white on hover */
+}
+        
+        .search-bar {
+            position: relative;
+            max-width: 400px;
+            flex-grow: 1;
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+        }
+        
+        .search-bar input {
+            padding-left: 40px;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+            height: 40px;
+            width: 100%;
+        }
+        
+        /* Booking Cards */
+        .booking-card {
+            background: white;
+            border-radius: 12px;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .booking-card h5 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .booking-meta span {
+            display: block;
+            margin-bottom: 5px;
+            color: #475569;
+        }
+
+        .booking-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            border-left: 1px solid #eee;
+            min-width: 180px;
+        }
+
+        .booking-actions .btn {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .no-bookings {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .movie-poster-container-bookings {
+            min-width: 160px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .movie-poster {
+            width: 120px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .booking-details {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .confirmation-number {
+            font-family: monospace;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .meta-grid-bookings {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .badge-pill {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-admin {
+            background-color: #e0f7fa;
+            color: #00bcd4;
+        }
+
+        .badge-user {
+            background-color: #e8f5e9;
+            color: #4caf50;
+        }
+
+        /* User Details Modal */
+        .user-modal-bookings {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content-bookings {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header-bookings {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .user-detail-item {
+            margin-bottom: 10px;
+        }
+
+        .user-detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .user-detail-value {
+            color: #212529;
+        }
+
+        .user-avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0 auto 15px;
+        }
+
+        /* Delete Confirmation Modal */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .delete-modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .delete-modal-header {
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .delete-modal-footer {
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .logo h3, .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                padding: 20px;
+            }
+
+            .booking-card {
+                flex-direction: column;
+            }
+            
+            .movie-poster-container-bookings {
+                width: 100%;
+                padding: 15px 0;
+            }
+            
+            .booking-actions {
+                border-left: none;
+                border-top: 1px solid #eee;
+                flex-direction: row;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .booking-actions .btn {
+                margin-bottom: 0;
+                width: auto;
+            }
+            
+            .meta-grid-bookings, .user-details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-bar {
+                order: -1;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-auto sidebar">
+            <div class="logo">
+                <h3><i class="bi bi-film"></i>Namma Tickets</h3>
+            </div>
+            <nav class="nav flex-column">
+                <a href="/admin/dashboard" class="nav-link"><i class="bi bi-speedometer2"></i><span> Dashboard</span></a>
+                <a href="/admin/movies" class="nav-link"><i class="bi bi-film"></i><span> Movies</span></a>
+                <a href="/admin/shows" class="nav-link"><i class="bi bi-calendar-event"></i><span> Shows</span></a>
+                <a href="/admin/bookings" class="nav-link active"><i class="bi bi-ticket-perforated"></i><span> Bookings</span></a>
+                <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i><span> Logout</span></a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col main-content">
+            <div class="page-header">
+                <h1><i class="bi bi-calendar-event me-2"></i>Manage Bookings</h1>
+                <div class="search-bar">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search bookings..." class="form-control">
+                </div>
+            </div>
+            
+            <div th:if="${bookings.empty}" class="no-bookings">
+                <i class="bi bi-calendar-x" style="font-size: 3rem;"></i>
+                <p class="mt-3">No bookings found.</p>
+            </div>
+            
+            <div id="bookingsContainer">
+                <div th:each="booking : ${bookings}" class="booking-card" 
+                     th:attr="data-search-content=${booking.show.movie.title + ' ' + booking.show.screen + ' ' + booking.user.name + ' ' + booking.user.email + ' ' + booking.seatNumbers}">
+                    <div class="movie-poster-container-bookings">
+                        <img th:src="@{'/admin/movies/image/' + ${booking.show.movie.id}}" 
+                             class="movie-poster" 
+                             th:alt="${booking.show.movie.title}"
+                             onerror="this.src='https://via.placeholder.com/120x180?text=No+Poster'">
+                    </div>
+                    
+                    <div class="booking-details">
+                        <h5 th:text="${booking.show.movie.title}">Movie Title</h5>
+                        <div class="text-muted-bookings mb-2">
+                            <small>Booked on <span th:text="${#temporals.format(booking.bookingTime, 'dd MMM yyyy hh:mm a')}"></span></small>
+                            <span class="confirmation-number ms-2" th:text="'Booking ID #' + ${booking.id}"></span>
+                            <span th:classappend="${booking.user.role == 'ADMIN'} ? 'badge-pill badge-admin' : 'badge-pill badge-user'"
+                                  th:text="${booking.user.role}" class="ms-2"></span>
+                        </div>
+                        
+                        <div class="meta-grid-bookings">
+                            <div>
+                                <strong><i class="bi bi-calendar"></i> Show Date:</strong> 
+                                <span th:text="${#temporals.format(booking.show.showDate, 'dd MMM yyyy')}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-clock"></i> Show Time:</strong> 
+                                <span th:text="${#temporals.format(booking.show.showTime, 'hh:mm a')}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-tv"></i> Screen:</strong> 
+                                <span th:text="${booking.show.screen}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-people"></i> Seats:</strong> 
+                                <span th:text="${booking.seatNumbers}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-currency-rupee"></i> Total:</strong> 
+                                ₹<span th:text="${#numbers.formatDecimal(booking.totalAmount, 1, 2)}"></span>
+                            </div>
+                            <div th:if="${booking.user.phone}">
+                                <strong><i class="bi bi-telephone"></i> Phone:</strong> 
+                                <span th:text="${booking.user.phone}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-actions">
+                        <button class="btn btn-outline-primary btn-sm view-user-btn" 
+                                th:attr="data-user-id=${booking.user.id}, 
+                                         data-user-name=${booking.user.name},
+                                         data-user-email=${booking.user.email},
+                                         data-user-role=${booking.user.role},
+                                         data-user-phone=${booking.user.phone ?: 'Not provided'},
+                                         data-user-created=${#temporals.format(booking.user.createdAt, 'dd MMM yyyy hh:mm a')},
+                                         data-user-active=${booking.user.active ? 'Active' : 'Inactive'}">
+                            <i class="bi bi-eye"></i> View User
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm delete-booking-btn" 
+                                th:attr="data-booking-id=${booking.id},
+                                         data-movie-title=${booking.show.movie.title},
+                                         data-show-date=${#temporals.format(booking.show.showDate, 'dd MMM yyyy')},
+                                         data-show-time=${#temporals.format(booking.show.showTime, 'hh:mm a')},
+                                         data-screen=${booking.show.screen}">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userModal" class="user-modal-bookings">
+    <div class="modal-content-bookings">
+        <div class="modal-header-bookings d-flex justify-content-between">
+            <h5 class="modal-title-bookings">User Details</h5>
+            <button type="button" class="btn-close close-modal"></button>
+        </div>
+        <div class="modal-body-bookings">
+            <div class="user-avatar-lg" id="modalUserAvatar">U</div>
+            <div class="user-details-grid">
+                <div class="user-detail-item">
+                    <div class="user-detail-label">Name</div>
+                    <div class="user-detail-value" id="modalUserName"></div>
+                </div>
+                <div class="user-detail-item">
+                    <div class="user-detail-label">Email</div>
+                    <div class="user-detail-value" id="modalUserEmail"></div>
+                </div>
+                <div class="user-detail-item">
+                    <div class="user-detail-label">Role</div>
+                    <div class="user-detail-value" id="modalUserRole"></div>
+                </div>
+                <div class="user-detail-item">
+                    <div class="user-detail-label">Phone</div>
+                    <div class="user-detail-value" id="modalUserPhone"></div>
+                </div>
+                <div class="user-detail-item">
+                    <div class="user-detail-label">Account Created</div>
+                    <div class="user-detail-value" id="modalUserCreated"></div>
+                </div>
+                <div class="user-detail-item">
+                    <div class="user-detail-label">Status</div>
+                    <div class="user-detail-value" id="modalUserActive"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary close-modal">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <div class="delete-modal-header">
+            <h5 class="modal-title">Confirm Deletion</h5>
+        </div>
+        <div class="delete-modal-body">
+            <p>Are you sure you want to delete this booking?</p>
+            <div class="booking-details-confirm">
+                <p><strong>Movie:</strong> <span id="deleteMovieTitle"></span></p>
+                <p><strong>Show Date:</strong> <span id="deleteShowDate"></span></p>
+                <p><strong>Show Time:</strong> <span id="deleteShowTime"></span></p>
+                <p><strong>Screen:</strong> <span id="deleteScreen"></span></p>
+            </div>
+            <p class="text-danger mt-2"><i class="bi bi-exclamation-triangle-fill"></i> This action cannot be undone.</p>
+        </div>
+        <div class="delete-modal-footer">
+            <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
+            <a href="#" class="btn btn-danger" id="confirmDelete">Delete</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const bookingCards = document.querySelectorAll('#bookingsContainer .booking-card');
+            
+            bookingCards.forEach(card => {
+                const searchContent = card.getAttribute('data-search-content').toLowerCase();
+                if (searchContent.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // User modal functionality
+        const userModal = document.getElementById('userModal');
+        const viewButtons = document.querySelectorAll('.view-user-btn');
+        const closeButtons = document.querySelectorAll('.close-modal');
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('modalUserAvatar').textContent = 
+                    this.getAttribute('data-user-name').charAt(0);
+                document.getElementById('modalUserName').textContent = 
+                    this.getAttribute('data-user-name');
+                document.getElementById('modalUserEmail').textContent = 
+                    this.getAttribute('data-user-email');
+                document.getElementById('modalUserRole').textContent = 
+                    this.getAttribute('data-user-role');
+                document.getElementById('modalUserPhone').textContent = 
+                    this.getAttribute('data-user-phone');
+                document.getElementById('modalUserCreated').textContent = 
+                    this.getAttribute('data-user-created');
+                document.getElementById('modalUserActive').textContent = 
+                    this.getAttribute('data-user-active');
+                
+                const roleElement = document.getElementById('modalUserRole');
+                if (roleElement.textContent === 'ADMIN') {
+                    roleElement.className = 'user-detail-value badge-pill badge-admin';
+                } else {
+                    roleElement.className = 'user-detail-value badge-pill badge-user';
+                }
+                
+                const activeElement = document.getElementById('modalUserActive');
+                if (activeElement.textContent === 'Active') {
+                    activeElement.style.color = 'green';
+                } else {
+                    activeElement.style.color = 'red';
+                }
+                
+                userModal.style.display = 'flex';
+            });
+        });
+        
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                userModal.style.display = 'none';
+            });
+        });
+        
+        userModal.addEventListener('click', function(e) {
+            if (e.target === userModal) {
+                userModal.style.display = 'none';
+            }
+        });
+
+        // Delete confirmation modal
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteButtons = document.querySelectorAll('.delete-booking-btn');
+        const cancelDeleteBtn = document.getElementById('cancelDelete');
+        const confirmDeleteBtn = document.getElementById('confirmDelete');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const bookingId = this.getAttribute('data-booking-id');
+                const movieTitle = this.getAttribute('data-movie-title');
+                const showDate = this.getAttribute('data-show-date');
+                const showTime = this.getAttribute('data-show-time');
+                const screen = this.getAttribute('data-screen');
+                
+                document.getElementById('deleteMovieTitle').textContent = movieTitle;
+                document.getElementById('deleteShowDate').textContent = showDate;
+                document.getElementById('deleteShowTime').textContent = showTime;
+                document.getElementById('deleteScreen').textContent = screen;
+                
+                confirmDeleteBtn.href = `/admin/bookings/delete/${bookingId}`;
+                deleteModal.style.display = 'flex';
+            });
+        });
+        
+        cancelDeleteBtn.addEventListener('click', function() {
+            deleteModal.style.display = 'none';
+        });
+        
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shows - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+    <style>
+        :root {
+            /* Theme Colors */
+            --primary: #ff3366;
+            --primary-light: #ff6b8b;
+            --secondary: #ffcc00;
+            --dark: #0a0a2a;
+            --light: #f8f9fa;
+            --admin-dark-bg: #1c1c3a;
+            --admin-light-bg: #f5f7fa;
+            --admin-card-bg: #ffffff;
+            
+            /* Layout */
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 70px;
+            
+            /* Design System */
+            --border-radius: 10px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--admin-light-bg);
+            min-height: 100vh;
+            color: #495057;
+            display: flex;
+        }
+        
+        /* ===== SIDEBAR ===== */
+        /* Sidebar Styles */
+        .sidebar {
+            height: 100vh;
+            background-color: var(--admin-dark-bg);
+            color: white;
+            position: fixed;
+            width: var(--sidebar-width);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding-top: 20px;
+        }
+
+        .sidebar .logo {
+            padding: 0 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h3 {
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.6rem;
+        }
+
+        .sidebar .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 8px 15px;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(45deg, var(--primary), #ff6b3d);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transform: scale(1.02);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+            transition: var(--transition);
+            width: calc(100% - var(--sidebar-width));
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2rem;
+            margin: 0;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+            transition: var(--transition);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+            color: white;
+        }
+        
+        /* ===== SEARCH BAR ===== */
+        .search-bar {
+            position: relative;
+            max-width: 400px;
+            flex-grow: 1;
+            transition: var(--transition);
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+            z-index: 10;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding-left: 2.5rem;
+            border-radius: 50px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            height: 45px;
+            font-size: 0.9rem;
+        }
+        
+        .search-bar input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(255, 51, 102, 0.25);
+            outline: none;
+        }
+        
+        /* ===== SHOWS TABLE ===== */
+        .shows-table {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+        
+        .shows-table .table {
+            margin-bottom: 0;
+        }
+        
+        .shows-table .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            padding: 1rem;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 0.9rem;
+        }
+        
+        .shows-table .table td {
+            vertical-align: middle;
+            padding: 1rem;
+            border-top: 1px solid #f1f3f5;
+        }
+        
+        .shows-table .table tr {
+            transition: var(--transition);
+        }
+        
+        .shows-table .table tr:hover {
+            background-color: rgba(255, 51, 102, 0.03);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        /* ===== MOVIE INFO IN TABLE ===== */
+        .movie-poster {
+            width: 160px;
+            height: 240px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .movie-info-container:hover .movie-poster img {
+            transform: scale(1.05);
+        }
+        
+        .movie-info {
+            margin: 15px;
+        }
+        
+        .movie-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 10px 0;
+            font-size: 1.5rem;
+        }
+        
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .badge {
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .badge-genre {
+            background-color: rgba(255, 51, 102, 0.1);
+            color: var(--primary);
+        }
+        
+        .badge-language {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+        
+        .badge-duration {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        /* ===== DESCRIPTION BADGE ===== */
+        .badge-description {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: inline-block;
+            max-width: 600px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: wrap;
+            vertical-align: middle;
+        }
+        
+        /* ===== ACTION BUTTONS ===== */
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            border: 1px solid;
+            background-color: transparent;
+            color: inherit;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-edit {
+            color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .btn-edit:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-delete {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-delete:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        /* ===== NO RESULTS MESSAGE ===== */
+        .no-results {
+            padding: 2.5rem;
+            text-align: center;
+            color: #6c757d;
+            display: none;
+        }
+        
+        .no-results i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #adb5bd;
+        }
+        
+        .no-results p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 992px) {
+            .movie-info-container {
+                flex-direction: column;
+            }
+            
+            .movie-poster {
+                margin-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed);
+            }
+            
+            .sidebar .logo h3, .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed);
+                padding: 1.5rem;
+                width: calc(100% - var(--sidebar-collapsed));
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .shows-table {
+                overflow-x: auto;
+            }
+            
+            .table {
+                min-width: 800px;
+            }
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .shows-table .table tr {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .shows-table .table tr:nth-child(1) { animation-delay: 0.1s; }
+        .shows-table .table tr:nth-child(2) { animation-delay: 0.2s; }
+        .shows-table .table tr:nth-child(3) { animation-delay: 0.3s; }
+        .shows-table .table tr:nth-child(4) { animation-delay: 0.4s; }
+        .shows-table .table tr:nth-child(5) { animation-delay: 0.5s; }
+        
+        /* Modal Styles */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 1.25rem;
+}
+
+.modal-title {
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.modal-body {
+    padding: 1.5rem;
+    color: #495057;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding: 1rem 1.25rem;
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(45deg, #c82333, #dc3545);
+}
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+        <div class="col-auto sidebar">
+            <div class="logo">
+                <h3><i class="bi bi-film"></i>Namma Tickets</h3>
+            </div>
+            <nav class="nav flex-column">
+                <a href="/admin/dashboard" class="nav-link"><i class="bi bi-speedometer2"></i><span> Dashboard</span></a>
+                <a href="/admin/movies" class="nav-link"><i class="bi bi-film"></i><span> Movies</span></a>
+                <a href="/admin/shows" class="nav-link active"><i class="bi bi-calendar-event"></i><span> Shows</span></a>
+                <a href="/admin/bookings" class="nav-link"><i class="bi bi-ticket-perforated"></i><span> Bookings</span></a>
+                <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i><span> Logout</span></a>
+            </nav>
+        </div>
+            
+            <!-- Main Content -->
+            <div class="col main-content">
+                <div class="page-header">
+                    <h1><i class="bi bi-calendar-event me-2"></i>Manage Shows</h1>
+                    <div class="d-flex gap-2">
+                        <div class="search-bar">
+                            <i class="bi bi-search"></i>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search shows...">
+                        </div>
+                        <a href="/admin/shows/add" class="btn btn-primary">
+                            <i class="bi bi-plus-lg me-2"></i>Add Show
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="shows-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Movie</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Screen</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="showsTableBody">
+                            <tr th:each="show : ${shows}">
+                                <td>
+                                    <div class="d-flex align-items-center movie-info-container" style="position: relative;">
+                                        <div class="movie-poster">
+                                            <img th:src="@{'/admin/movies/image/' + ${show.movie.id}}"
+                                                 th:alt="${show.movie.title}"
+                                                 onerror="this.src='https://via.placeholder.com/100x150?text=No+Image'">
+                                        </div>
+                                        <div class="movie-info">
+                                            <h5 class="movie-title" th:text="${show.movie.title}"></h5>
+                                            <div class="movie-meta">
+                                                <span class="badge badge-genre" th:text="${show.movie.genre}"></span>
+                                                <span class="badge badge-language" th:text="${show.movie.language}"></span>
+                                                <span class="badge badge-duration"
+                                                      th:text="${(show.movie.duration/60).intValue() + 'h ' + show.movie.duration%60 + 'm'}"></span>
+                                            </div>
+                                               <span class="badge-description" 
+                                                     th:text="${show.movie.description}"
+                                                     style="margin-top: 5px;"></span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${show.showDate}"></td>
+                                <td th:text="${show.showTime}"></td>
+                                <td th:text="${show.screen}"></td>
+                                <td th:text="'₹' + ${#numbers.formatDecimal(show.price, 1, 2)}"></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{'/admin/shows/edit/' + ${show.id}}" 
+                                           class="action-btn btn-edit"
+                                           title="Edit Show">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{'/admin/shows/delete/' + ${show.id}}"
+                                           onclick="return confirm('Are you sure you want to delete this show?')"
+                                           class="action-btn btn-delete"
+                                           title="Delete Show">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="no-results" id="noResults">
+                        <i class="bi bi-search"></i>
+                        <p>No shows found matching your search</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteShowModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this show? All associated bookings will also be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmShowDelete" href="#" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Delete show confirmation
+        $(document).on('click', '.btn-delete', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const deleteUrl = $(this).attr('href');
+            $('#confirmShowDelete').attr('href', deleteUrl);
+            
+            const movieTitle = $(this).closest('tr').find('.movie-title').text();
+            const showDate = $(this).closest('tr').find('td:nth-child(2)').text();
+            const showTime = $(this).closest('tr').find('td:nth-child(3)').text();
+            
+            $('#deleteShowModal .modal-body p').html(
+                `Are you sure you want to delete the show for <strong>${movieTitle}</strong>?<br>
+                Date: ${showDate}<br>
+                Time: ${showTime}<br><br>
+                All associated bookings will also be deleted.`
+            );
+            
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteShowModal'));
+            deleteModal.show();
+        });
+
+        // Enhanced search functionality
+        $('#searchInput').on('input', function() {
+            const query = $(this).val().toLowerCase().trim();
+            let hasResults = false;
+            
+            $('#showsTableBody tr').each(function() {
+                const title = $(this).find('.movie-title').text().toLowerCase();
+                const genre = $(this).find('.badge-genre').text().toLowerCase();
+                const date = $(this).find('td:nth-child(2)').text().toLowerCase();
+                const time = $(this).find('td:nth-child(3)').text().toLowerCase();
+                const screen = $(this).find('td:nth-child(4)').text().toLowerCase();
+                
+                if (title.includes(query) || genre.includes(query) || 
+                    date.includes(query) || time.includes(query) || 
+                    screen.includes(query)) {
+                    $(this).show();
+                    hasResults = true;
+                } else {
+                    $(this).hide();
+                }
+            });
+            
+            // Show/hide no results message
+            if (!hasResults && query.length > 0) {
+                $('#noResults').show();
+            } else {
+                $('#noResults').hide();
+            }
+        });
+        
+        // Add hover effect to table rows
+        $('.table tr').hover(
+            function() {
+                $(this).css('transform', 'translateY(-2px)');
+                $(this).css('box-shadow', '0 4px 12px rgba(0,0,0,0.1)');
+            },
+            function() {
+                $(this).css('transform', 'translateY(0)');
+                $(this).css('box-shadow', 'none');
+            }
+        );
+    });
+</script>
+</body>
+</html>

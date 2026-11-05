@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Namma Tickets - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+    <style>
+        :root {
+            /* Color System */
+            --primary: #ff3366;
+            --primary-light: #ff6b8b;
+            --primary-dark: #e91e63;
+            --secondary: #ffcc00;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #ff9e00;
+            --info: #4895ef;
+            --dark: #0a0a2a;
+            --dark-bg: #1c1c3a;
+            --light-bg: #f8f9fa;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --admin-dark-bg: #1c1c3a;
+            --admin-light-bg: #e9ecef;
+            --admin-card-bg: #ffffff;
+            
+            /* Layout */
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 70px;
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 0.75rem;
+            --spacing-lg: 1rem;
+            --spacing-xl: 1.5rem;
+            
+            /* Border Radius */
+            --radius: 8px;
+            --radius-lg: 12px;
+            
+            /* Box Shadow */
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+            
+            /* Transition */
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--gray-800);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            height: 100vh;
+            background-color: var(--admin-dark-bg);
+            color: white;
+            position: fixed;
+            width: var(--sidebar-width);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding-top: 20px;
+            transition: var(--transition);
+        }
+
+        .sidebar .logo {
+            padding: 0 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h3 {
+            margin: 0;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 1.6rem;
+            transition: var(--transition);
+        }
+
+        .sidebar .logo i {
+            color: var(--secondary);
+            margin-right: 10px;
+            font-size: 1.8rem;
+            transition: var(--transition);
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: var(--transition);
+            border-radius: 8px;
+            margin: 8px 15px;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .sidebar .nav-link.active {
+            color: white;
+            background: linear-gradient(45deg, var(--primary), #ff6b3d);
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transform: scale(1.02);
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+        
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: var(--spacing-xl);
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            position: relative;
+            padding-bottom: var(--spacing-sm);
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        .search-container {
+            position: relative;
+            max-width: 400px;
+            flex-grow: 1;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+            z-index: 10;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--spacing-md) calc(var(--spacing-md) * 2 + 24px);
+            border-radius: 50px;
+            border: 1px solid var(--gray-300);
+            background-color: white;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 51, 102, 0.2);
+        }
+        
+        /* ===== STATS CARDS ===== */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+            color: var(--gray-800);
+        }
+        
+        /* ===== SECTION HEADERS ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            position: relative;
+            padding-bottom: var(--spacing-xs);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--primary-light));
+            border: none;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+            transition: var(--transition);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+            color: white;
+        }
+        
+        .btn-outline-primary {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* ===== MOVIE GRID ===== */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .movie-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .movie-poster-container {
+            position: relative;
+            width: 100%;
+            padding-top: 150%;
+            overflow: hidden;
+        }
+        
+        .movie-poster-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .movie-card:hover .movie-poster-img {
+            transform: scale(1.05);
+        }
+        
+        .movie-info {
+            padding: var(--spacing-lg);
+        }
+        
+        .movie-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-sm);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+        }
+        
+        .movie-meta span {
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background-color: #f0f2f5;
+            color: var(--gray-600);
+        }
+        
+        /* ===== SHOWS TABLE ===== */
+        .shows-table {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .shows-table .table {
+            margin-bottom: 0;
+            width: 100%;
+        }
+        
+        .shows-table .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: var(--spacing-lg);
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 0.9rem;
+        }
+        
+        .shows-table .table td {
+            padding: var(--spacing-lg);
+            vertical-align: middle;
+            border-top: 1px solid var(--gray-100);
+        }
+        
+        .shows-table .table tr {
+            transition: var(--transition);
+        }
+        
+        .shows-table .table tr:hover {
+            background-color: rgba(255, 51, 102, 0.03);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        /* ===== MOVIE INFO IN TABLE ===== */
+        .movie-poster {
+            width: 80px;
+            height: 120px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .movie-info-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            position: relative;
+        }
+        
+        .movie-info-container:hover .movie-poster img {
+            transform: scale(1.05);
+        }
+        
+        .movie-info {
+            flex-grow: 1;
+        }
+        
+        .movie-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-xs);
+            color: var(--gray-800);
+        }
+        
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .badge {
+            font-weight: 500;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .badge-genre {
+            background-color: rgba(255, 51, 102, 0.1);
+            color: var(--primary);
+        }
+        
+        .badge-language {
+            background-color: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+        
+        .badge-duration {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .badge-description {
+            background-color: rgba(108, 117, 125, 0.1);
+            color: var(--gray-600);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 5px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
+            position: relative;
+        }
+        
+        .movie-info-container:hover .badge-description {
+            white-space: normal;
+            max-width: 300px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius);
+            padding: 8px 12px;
+            z-index: 10;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            width: 300px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        /* ===== ACTION BUTTONS ===== */
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            border: none;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-edit {
+            background-color: #007bff;
+        }
+        
+        .btn-edit:hover {
+            background-color: #0069d9;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        
+        /* ===== BOOKING CARDS ===== */
+        .booking-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 0;
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-lg);
+            transition: var(--transition);
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .movie-poster-container-bookings {
+            min-width: 160px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .movie-poster {
+            width: 120px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: var(--radius);
+        }
+        
+        .booking-details {
+            flex-grow: 1;
+            padding: var(--spacing-lg);
+        }
+        
+        .booking-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--spacing-lg);
+            border-left: 1px solid var(--gray-200);
+            min-width: 180px;
+        }
+        
+        .booking-actions .btn {
+            margin-bottom: var(--spacing-sm);
+            width: 100%;
+        }
+        
+        .meta-grid-bookings {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .badge-pill {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .badge-admin {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .badge-user {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        /* ===== USER MODAL ===== */
+        .user-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-weight: 700;
+            font-size: var(--font-size-xl);
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+        
+        .user-avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0 auto var(--spacing-lg);
+        }
+        
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .user-detail-item {
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .user-detail-label {
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xs);
+            display: block;
+        }
+        
+        .user-detail-value {
+            color: var(--gray-800);
+            font-size: var(--font-size-base);
+        }
+        
+        .user-detail-badge {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .badge-admin {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .badge-user {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--secondary);
+        }
+        
+        .user-detail-status {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--secondary);
+        }
+        
+        .status-inactive {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .modal-footer {
+            border-top: 1px solid var(--gray-200);
+            padding-top: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius);
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--gray-300);
+            color: var(--gray-800);
+        }
+        
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--gray-500);
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-lg);
+            color: var(--gray-400);
+        }
+        
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 992px) {
+            .movie-info-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .movie-poster {
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            .movie-info {
+                margin-left: 0;
+            }
+            
+            .booking-card {
+                flex-direction: column;
+            }
+            
+            .movie-poster-container-bookings {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .booking-actions {
+                border-left: none;
+                border-top: 1px solid var(--gray-200);
+                flex-direction: row;
+                justify-content: center;
+                gap: var(--spacing-sm);
+            }
+            
+            .booking-actions .btn {
+                margin-bottom: 0;
+                width: auto;
+            }
+            
+            .user-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: var(--sidebar-collapsed);
+            }
+            
+            .sidebar .logo h3, .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .sidebar .nav-link i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: var(--sidebar-collapsed);
+                padding: var(--spacing-md);
+                width: calc(100% - var(--sidebar-collapsed));
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                max-width: 100%;
+                width: 100%;
+                margin-top: var(--spacing-md);
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .shows-table {
+                overflow-x: auto;
+            }
+            
+            .movie-poster {
+                height: 100px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-sm);
+            }
+        }
+        
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .movie-card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .movie-card:nth-child(1) { animation-delay: 0.1s; }
+        .movie-card:nth-child(2) { animation-delay: 0.2s; }
+        .movie-card:nth-child(3) { animation-delay: 0.3s; }
+        .movie-card:nth-child(4) { animation-delay: 0.4s; }
+        .movie-card:nth-child(5) { animation-delay: 0.5s; }
+        .movie-card:nth-child(6) { animation-delay: 0.6s; }
+        .movie-card:nth-child(7) { animation-delay: 0.7s; }
+        .movie-card:nth-child(8) { animation-delay: 0.8s; }
+    </style>
+</head>
+<body>
+    <!-- Rest of your HTML remains the same -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-auto sidebar">
+            <div class="logo">
+                <h3><i class="bi bi-film"></i>Namma Tickets</h3>
+            </div>
+            <nav class="nav flex-column">
+                <a href="/admin/dashboard" class="nav-link active"><i class="bi bi-speedometer2"></i><span> Dashboard</span></a>
+                <a href="/admin/movies" class="nav-link"><i class="bi bi-film"></i><span> Movies</span></a>
+                <a href="/admin/shows" class="nav-link"><i class="bi bi-calendar-event"></i><span> Shows</span></a>
+                <a href="/admin/bookings" class="nav-link"><i class="bi bi-ticket-perforated"></i><span> Bookings</span></a>
+                <a href="/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i><span> Logout</span></a>
+            </nav>
+        </div>
+            
+            <!-- Main Content -->
+            <div class="col main-content">
+                <div class="page-header">
+                    <h1 class="page-title">
+                        <i class="bi bi-speedometer2"></i>
+                        Dashboard
+                    </h1>
+                    <div class="search-container">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search...">
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Movies</div>
+                            <div class="stat-icon" style="background-color: rgba(67, 97, 238, 0.1); color: var(--primary);">
+                                <i class="bi bi-film"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${totalMovies}">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Shows</div>
+                            <div class="stat-icon" style="background-color: rgba(76, 201, 240, 0.1); color: var(--secondary);">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${totalShows}">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Bookings</div>
+                            <div class="stat-icon" style="background-color: rgba(247, 37, 133, 0.1); color: var(--danger);">
+                                <i class="bi bi-ticket-perforated"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="${totalBookings}">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Revenue</div>
+                            <div class="stat-icon" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" th:text="'₹' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">₹0.00</div>
+                    </div>
+                </div>
+                
+                <!-- Movies Section -->
+                <div class="section-header">
+                    <h2 class="section-title">Recent Movies</h2>
+                    <a href="/admin/movies/add" class="btn btn-primary"> <i
+                        class="bi bi-plus-lg me-2"></i>Add Movie
+                    </a>
+                </div>
+                <div class="movie-grid">
+                    <div class="movie-card" th:each="movie, stat : ${movies}"
+                        th:if="${stat.index} < 8" th:data-movie-id="${movie.id}">
+                        <div class="movie-poster-container">
+                            <img class="movie-poster-img"
+                                th:src="@{'/admin/movies/image/' + ${movie.id}}"
+                                th:alt="${movie.title}"
+                                onerror="this.src='https://picsum.photos/seed/movie/400x600?text=No+Poster'">
+                        </div>
+                        <div class="movie-info">
+                            <h5 class="movie-title" th:text="${movie.title}"></h5>
+                            <div class="movie-meta">
+                                <span th:text="${movie.genre}"></span>
+                                <span th:text="${movie.language}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/admin/movies" class="btn btn-outline-primary"> <i
+                        class="bi bi-arrow-right me-2"></i>View All Movies
+                    </a>
+                </div>
+                
+                <!-- Shows Section -->
+                <div class="section-header mt-5">
+                    <h2 class="section-title">Upcoming Shows</h2>
+                    <a href="/admin/shows/add" class="btn btn-primary"> <i
+                        class="bi bi-plus-lg me-2"></i>Add Show
+                    </a>
+                </div>
+                <div class="shows-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Movie</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Screen</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="showsTableBody">
+                            <tr th:each="show, stat : ${shows}" th:if="${stat.index} < 5">
+                                <td>
+                                    <div class="d-flex align-items-center movie-info-container" style="position: relative;">
+                                        <div class="movie-poster">
+                                            <img th:src="@{'/admin/movies/image/' + ${show.movie.id}}"
+                                                 th:alt="${show.movie.title}"
+                                                 onerror="this.src='https://via.placeholder.com/100x150?text=No+Image'">
+                                        </div>
+                                        <div class="movie-info">
+                                            <h5 class="movie-title" th:text="${show.movie.title}"></h5>
+                                            <div class="movie-meta">
+                                                <span class="badge badge-genre" th:text="${show.movie.genre}"></span>
+                                                <span class="badge badge-language" th:text="${show.movie.language}"></span>
+                                                <span class="badge badge-duration"
+                                                      th:text="${(show.movie.duration/60).intValue() + 'h ' + show.movie.duration%60 + 'm'}"></span>
+                                                <span class="badge-description" 
+                                                      th:text="${show.movie.description}"
+                                                      th:title="${show.movie.description}"
+                                                      style="margin-top: 5px;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${show.showDate}"></td>
+                                <td th:text="${show.showTime}"></td>
+                                <td th:text="${show.screen}"></td>
+                                <td th:text="'₹' + ${#numbers.formatDecimal(show.price, 1, 2)}"></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{'/admin/shows/edit/' + ${show.id}}" 
+                                           class="action-btn btn-edit"
+                                           title="Edit Show">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{'/admin/shows/delete/' + ${show.id}}"
+                                           onclick="return confirm('Are you sure you want to delete this show?')"
+                                           class="action-btn btn-delete"
+                                           title="Delete Show">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/admin/shows" class="btn btn-outline-primary"> <i
+                        class="bi bi-arrow-right me-2"></i>View All Shows
+                    </a>
+                </div>
+                
+                <!-- Bookings Section -->
+                <div class="section-header my-5">
+                    <h2 class="section-title">Recent Bookings</h2>
+                </div>
+                <div th:if="${bookings.empty}" class="empty-state">
+                    <i class="bi bi-calendar-x empty-icon"></i>
+                    <p>No bookings found.</p>
+                </div>
+                <div th:each="booking, stat : ${bookings}"
+                    th:if="${stat.index} < 5" class="booking-card">
+                    <div class="movie-poster-container-bookings">
+                        <img
+                            th:src="@{'/admin/movies/image/' + ${booking.show.movie.id}}"
+                            class="movie-poster" th:alt="${booking.show.movie.title}"
+                            onerror="this.src='https://picsum.photos/seed/movie/120x180?text=No+Poster'">
+                    </div>
+                    <div class="booking-details">
+                        <h5 th:text="${booking.show.movie.title}">Movie Title</h5>
+                        <div class="text-muted-bookings mb-2">
+                            <small>Booked on <span
+                                th:text="${#temporals.format(booking.bookingTime, 'dd MMM yyyy hh:mm a')}"></span></small>
+                            <span class="confirmation-number ms-2"
+                                th:text="'Booking ID #' + ${booking.id}"></span> <span
+                                th:classappend="${booking.user.role == 'ADMIN'} ? 'badge-pill badge-admin' : 'badge-pill badge-user'"
+                                th:text="${booking.user.role}" class="ms-2"></span>
+                        </div>
+                        <div class="meta-grid-bookings">
+                            <div>
+                                <strong><i class="bi bi-calendar"></i> Show Date:</strong> <span
+                                    th:text="${#temporals.format(booking.show.showDate, 'dd MMM yyyy')}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-clock"></i> Show Time:</strong> <span
+                                    th:text="${#temporals.format(booking.show.showTime, 'hh:mm a')}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-tv"></i> Screen:</strong> <span
+                                    th:text="${booking.show.screen}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-people"></i> Seats:</strong> <span
+                                    th:text="${booking.seatNumbers}"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-currency-rupee"></i> Total:</strong> ₹<span
+                                    th:text="${#numbers.formatDecimal(booking.totalAmount, 1, 2)}"></span>
+                            </div>
+                            <div th:if="${booking.user.phone}">
+                                <strong><i class="bi bi-telephone"></i> Phone:</strong> <span
+                                    th:text="${booking.user.phone}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <button class="btn btn-outline-primary btn-sm view-user-btn"
+                            th:attr="data-user-id=${booking.user.id},
+                                     data-user-name=${booking.user.name},
+                                     data-user-email=${booking.user.email},
+                                     data-user-role=${booking.user.role},
+                                     data-user-phone=${booking.user.phone ?: 'Not provided'},
+                                     data-user-created=${#temporals.format(booking.user.createdAt, 'dd MMM yyyy hh:mm a')},
+                                     data-user-active=${booking.user.active ? 'Active' : 'Inactive'}">
+                            <i class="bi bi-eye"></i> View User
+                        </button>
+                        <a th:href="@{'/admin/bookings/delete/' + ${booking.id}}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/admin/bookings" class="btn btn-outline-primary"> <i
+                        class="bi bi-arrow-right me-2"></i>View All Bookings
+                    </a>
+                </div>
+                
+                <!-- User Details Modal -->
+                <div id="userModal" class="user-modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-person-circle"></i>
+                                User Details
+                            </h5>
+                            <button type="button" class="modal-close">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="user-avatar-lg" id="modalUserAvatar">U</div>
+                            <div class="user-details-grid">
+                                <div class="user-detail-item">
+                                    <span class="user-detail-label">Name</span>
+                                    <span class="user-detail-value" id="modalUserName"></span>
+                                </div>
+                                <div class="user-detail-item">
+                                    <span class="user-detail-label">Email</span>
+                                    <span class="user-detail-value" id="modalUserEmail"></span>
+                                </div>
+                                <div class="user-detail-item">
+                                    <span class="user-detail-label">Role</span>
+                                    <span class="user-detail-badge" id="modalUserRole"></span>
+                                </div>
+                                <div class="user-detail-item">
+                                    <span class="user-detail-label">Phone</span>
+                                    <span class="user-detail-value" id="modalUserPhone"></span>
+                                </div>
+                                <div class="user-detail-item">
+                                    <span class="user-detail-label">Account Created</span>
+                                    <span class="user-detail-value" id="modalUserCreated"></span>
+                                </div>
+                                <div class="user-detail-item">
+                                    <span class="user-detail-label">Status</span>
+                                    <span class="user-detail-status" id="modalUserActive"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary close-modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Movie card click handler
+            document.querySelectorAll('.movie-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const movieId = this.dataset.movieId;
+                    window.location.href = '/admin/movies/edit/' + movieId;
+                });
+            });
+            
+            const modal = document.getElementById('userModal');
+            const viewButtons = document.querySelectorAll('.view-user-btn');
+            const closeButtons = document.querySelectorAll('.close-modal');
+            
+            // Show modal when view button is clicked
+            viewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Get user data from data attributes
+                    document.getElementById('modalUserAvatar').textContent = 
+                        this.getAttribute('data-user-name').charAt(0);
+                    document.getElementById('modalUserName').textContent = 
+                        this.getAttribute('data-user-name');
+                    document.getElementById('modalUserEmail').textContent = 
+                        this.getAttribute('data-user-email');
+                    
+                    const roleElement = document.getElementById('modalUserRole');
+                    roleElement.textContent = this.getAttribute('data-user-role');
+                    roleElement.className = 'user-detail-badge ' + 
+                        (this.getAttribute('data-user-role') === 'ADMIN' ? 'badge-admin' : 'badge-user');
+                    
+                    document.getElementById('modalUserPhone').textContent = 
+                        this.getAttribute('data-user-phone');
+                    document.getElementById('modalUserCreated').textContent = 
+                        this.getAttribute('data-user-created');
+                    
+                    const statusElement = document.getElementById('modalUserActive');
+                    statusElement.textContent = this.getAttribute('data-user-active');
+                    statusElement.className = 'user-detail-status ' + 
+                        (this.getAttribute('data-user-active') === 'Active' ? 'status-active' : 'status-inactive');
+                    
+                    modal.style.display = 'flex';
+                });
+            });
+            
+            // Close modal when close button is clicked
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

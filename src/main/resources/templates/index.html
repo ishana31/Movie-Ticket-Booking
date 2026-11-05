@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Namma Tickets - Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+  :root {
+    --primary: #ff3366;
+    --primary-light: #ff6b3d;
+    --primary-dark: #e91e63;
+    --secondary: #4cc9f0;
+    --accent: #ffcc00;
+    --dark: #0a0a2a;
+    --darker: #050510;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+    --white: #ffffff;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--darker), var(--dark));
+    color: var(--white);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    position: relative;
+  }
+
+  .container {
+    z-index: 10;
+    position: relative;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .logo-container {
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .logo {
+    font-size: 4rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, var(--primary), var(--primary-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+    display: inline-block;
+  }
+
+  .logo::after {
+    content: '';
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(45deg, var(--primary), var(--accent));
+    border-radius: 2px;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    color: var(--gray);
+    margin-top: 1.5rem;    
+    font-weight: 30s0;
+    letter-spacing: 1px;
+  }
+
+  .auth-buttons {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .auth-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .auth-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
+    z-index: -1;
+  }
+
+  .auth-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 51, 102, 0.2);
+  }
+
+  .auth-btn:hover::before {
+    left: 100%;
+  }
+
+  .btn-signup {
+    background-color: rgba(255, 51, 102, 0.2);
+    border-color: var(--primary);
+  }
+
+  .btn-signup:hover {
+    background-color: rgba(255, 51, 102, 0.3);
+  }
+
+  .btn-login {
+    background-color: rgba(76, 201, 240, 0.2);
+    border-color: var(--secondary);
+  }
+
+  .btn-login:hover {
+    background-color: rgba(76, 201, 240, 0.3);
+  }
+
+  /* Floating Icons */
+  .floating-icon {
+    position: absolute;
+    opacity: 0.15;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    will-change: transform;
+    z-index: 1;
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+  }
+
+  /* Animation base */
+  @keyframes float {
+    0% {
+      transform: translateY(100vh) scale(0.8) rotate(0deg);
+      opacity: 0.1;
+    }
+    50% {
+      opacity: 0.15;
+    }
+    100% {
+      transform: translateY(-120vh) scale(1.2) rotate(360deg);
+      opacity: 0.1;
+    }
+  }
+
+  /* Unique placements with staggered delays */
+  .icon-1 { top: 5%; left: 5%; animation: float 22s linear infinite; animation-delay: 0s; }
+  .icon-2 { top: 10%; left: 20%; animation: float 25s linear infinite; animation-delay: 2s; }
+  .icon-3 { top: 15%; left: 35%; animation: float 28s linear infinite; animation-delay: 4s; }
+  .icon-4 { top: 20%; left: 50%; animation: float 26s linear infinite; animation-delay: 6s; }
+  .icon-5 { top: 25%; left: 65%; animation: float 24s linear infinite; animation-delay: 8s; }
+  .icon-6 { top: 30%; left: 80%; animation: float 23s linear infinite; animation-delay: 10s; }
+  .icon-7 { top: 35%; left: 15%; animation: float 30s linear infinite; animation-delay: 12s; }
+  .icon-8 { top: 40%; left: 40%; animation: float 32s linear infinite; animation-delay: 14s; }
+  .icon-9 { top: 45%; left: 70%; animation: float 26s linear infinite; animation-delay: 16s; }
+  .icon-10 { top: 50%; left: 90%; animation: float 29s linear infinite; animation-delay: 18s; }
+
+  /* Background glow */
+  .animated-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--darker), var(--dark));
+    z-index: 0;
+  }
+
+  .animated-bg::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 51, 102, 0.1) 0%, rgba(76, 201, 240, 0.05) 50%, transparent 70%);
+    animation: bgAnimation 15s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes bgAnimation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .footer-text {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--gray);
+    z-index: 10;
+  }
+
+  @media (max-width: 768px) {
+    .logo {
+      font-size: 2.5rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
+
+    .auth-btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+
+    .floating-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+      opacity: 0.08;
+    }
+  }
+</style>
+
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-bg"></div>
+  
+  <!-- Floating Movie Icons -->
+  <div class="floating-icon icon-1"><i class="fas fa-film"></i></div>
+  <div class="floating-icon icon-2"><i class="fas fa-video"></i></div>
+  <div class="floating-icon icon-3"><i class="fas fa-ticket-alt"></i></div>
+  <div class="floating-icon icon-4"><i class="fas fa-camera-retro"></i></div>
+  <div class="floating-icon icon-5"><i class="fas fa-clapperboard"></i></div>
+  <div class="floating-icon icon-6"><i class="fas fa-film"></i></div>
+  <div class="floating-icon icon-7"><i class="fas fa-video"></i></div>
+  <div class="floating-icon icon-8"><i class="fas fa-ticket-alt"></i></div>
+  <div class="floating-icon icon-9"><i class="fas fa-camera-retro"></i></div>
+  <div class="floating-icon icon-10"><i class="fas fa-clapperboard"></i></div>
+  <div class="floating-icon icon-11"><i class="fas fa-film"></i></div>
+  <div class="floating-icon icon-12"><i class="fas fa-video"></i></div>
+  <div class="floating-icon icon-13"><i class="fas fa-ticket-alt"></i></div>
+  <div class="floating-icon icon-14"><i class="fas fa-camera-retro"></i></div>
+  <div class="floating-icon icon-15"><i class="fas fa-clapperboard"></i></div>
+  <div class="floating-icon icon-16"><i class="fas fa-film"></i></div>
+  <div class="floating-icon icon-17"><i class="fas fa-video"></i></div>
+  <div class="floating-icon icon-18"><i class="fas fa-ticket-alt"></i></div>
+  <div class="floating-icon icon-19"><i class="fas fa-camera-retro"></i></div>
+  <div class="floating-icon icon-20"><i class="fas fa-clapperboard"></i></div>
+  
+  <!-- Main Content -->
+  <div class="container">
+    <div class="logo-container">
+      <div class="logo">Namma Tickets</div>
+      <div class="subtitle">Your Ultimate Movie Experience</div>
+    </div>
+    
+    <div class="auth-buttons">
+      <a href="/register" class="auth-btn btn-signup">
+        <i class="fas fa-user-plus"></i> Sign Up
+      </a>
+      <a href="/login" class="auth-btn btn-login">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </a>
+    </div>
+    
+    <div class="footer-text">
+      Experience the magic of movies with Namma Tickets
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

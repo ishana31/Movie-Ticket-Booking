@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title th:text="${movie.title} + ' - Booking'">Movie Booking</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link
+	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+	<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+<style>
+:root {
+	--primary: #ff3366;
+	--secondary: #ffcc00;
+	--dark: #0a0a2a;
+	--light: #f8f9fa;
+	--header-height: 60px;
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	/* background: linear-gradient(rgba(10, 10, 42, 0.95),
+        rgba(10, 10, 42, 0.9)),
+        url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80')
+        no-repeat center center/cover fixed; */
+	background: var(--light);
+	color: white;
+	padding-top: var(--header-height);
+	min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+	background-color: rgba(10, 10, 42, 0.9);
+	height: var(--header-height);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	backdrop-filter: blur(10px);
+	padding: 0 2rem;
+	border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+}
+
+.navbar-brand {
+	font-size: 1.6rem;
+	font-weight: 700;
+	position: relative;
+	display: inline-block;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.navbar-brand i {
+	color: var(--secondary);
+	margin-right: 10px;
+	font-size: 1.8rem;
+}
+
+.nav-link {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 6px;
+	margin: 0 5px;
+	border-radius: 6px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+}
+
+.nav-link i {
+	margin-right: 8px;
+	font-size: 1.1rem;
+}
+
+.nav-link:hover, .nav-link.active {
+	color: white;
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+}
+
+.user-avatar {
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	transition: all 0.3s ease;
+}
+
+.dropdown:hover .user-avatar {
+	border-color: var(--secondary);
+	transform: scale(1.05);
+}
+
+.dropdown-menu {
+	background-color: rgba(10, 10, 42, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 8px 16px;
+	transition: all 0.3s;
+}
+
+.dropdown-item:hover {
+	color: white;
+	background-color: rgba(255, 255, 255, 0.1);
+	padding-left: 20px;
+}
+
+.dropdown-item i {
+	width: 20px;
+	text-align: center;
+	margin-right: 10px;
+	color: var(--secondary);
+}
+
+/* Main Content */
+.booking-container {
+	position: relative;
+	z-index: 1;
+	padding-bottom: 50px;
+}
+/* Movie Info & Booking Summary */
+.movie-info, .seat-layout, .booking-summary {
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	border-radius: 15px;
+	overflow: hidden;
+	margin-bottom: 25px;
+	transition: all 0.3s ease;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+	color: white; /* Ensure text is visible */
+}
+
+.movie-info {
+	padding: 30px;
+	margin-top: calc(var(--header-height)+ 20px);
+	/* Adjust for fixed header */
+}
+
+.movie-poster img {
+	border-radius: 8px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.movie-details {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: space-between;
+}
+
+.movie-details h2 {
+	font-weight: 700;
+	font-size: 40px;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.movie-details p {
+	color: var(--dark);
+}
+
+.movie-details h5 {
+	color: var(--dark);
+}
+
+.show-details {
+	background-color: var(--dark);
+	padding: 15px;
+	border-radius: 8px;
+	margin-top: 20px;
+	border-left: 3px solid var(--secondary);
+}
+
+.show-details h5 {
+	font-weight: 600;
+	margin-bottom: 15px;
+	display: inline-block;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.show-details p {
+	color: white;
+}
+
+.show-details strong {
+	color: var(--primary);
+}
+/* Seat Layout */
+.seat-layout {
+	padding: 30px;
+	text-align: center;
+}
+
+.screen {
+	background-color: var(--dark);
+	color: white;
+	padding: 15px;
+	margin-bottom: 30px;
+	border-radius: 5px;
+	font-weight: bold;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+	margin-top: 20px;
+	font-size: 1.2rem;
+	letter-spacing: 2px;
+}
+
+.legend {
+	display: flex;
+	justify-content: space-around;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+}
+
+.legend-item {
+	display: flex;
+	margin: 0 15px 10px;
+	color: var(--dark);
+}
+
+.legend-box {
+	width: 25px;
+	height: 25px;
+	margin-right: 8px;
+	border-radius: 5px;
+	border: 1px solid var(--dark);
+}
+
+.btn-primary {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+	padding: 10px 20px;
+	border-radius: 50px;
+	font-weight: 600;
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+	transition: all 0.3s;
+}
+
+.btn-primary:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+}
+/* Updated colors as requested */
+.legend-box.available {
+	background-color: rgba(255, 255, 255, 0.15);
+}
+
+.legend-box.selected {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+}
+
+.legend-box.booked {
+	background-color: var(--dark); /* Yellow for booked */
+}
+
+.seat-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 30px;
+	overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
+	padding-bottom: 15px;
+}
+
+.seat-row {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.seat-label {
+	width: 35px;
+	height: 35px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	color: var(--primary);
+	font-size: 1.1rem;
+}
+
+.seat {
+	width: 40px;
+	height: 40px;
+	margin: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(255, 255, 255, 0.15);
+	/* Available seats - transparent */
+	border: 1px solid var(--dark);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-weight: 500;
+	font-size: 14px;
+	color: var(--dark);
+}
+
+.seat:hover:not(.booked) {
+	transform: scale(1.05);
+	box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+	background-color: rgba(255, 255, 255, 0.25);
+}
+
+.seat.selected {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	/* Selected seats - same as before */
+	color: white;
+	transform: scale(1.05);
+	box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+	border-color: transparent;
+}
+
+.seat.booked {
+	background-color: var(--dark); /* Booked seats - yellow */
+	color: white; /* Dark text for yellow background */
+	cursor: not-allowed;
+	opacity: 0.8;
+	pointer-events: none;
+	border-color: rgba(255, 204, 0, 0.4);
+}
+/* Booking Summary */
+.booking-summary .card-body {
+	padding: 30px;
+}
+
+.booking-summary h5.card-title {
+	font-weight: 700;
+	font-size: 30px;
+	margin-bottom: 20px;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	display: inline-block;
+	margin-bottom: 20px;
+}
+
+.summary-item {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 12px;
+	font-size: 1.1rem;
+	padding-bottom: 5px;
+	border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.summary-item:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+}
+
+.summary-item span {
+	color: var(--dark);
+}
+
+.summary-item strong {
+	font-size: 18px;
+	color: var(--dark);
+}
+
+.summary-item i {
+	font-size: 18px;
+	color: var(--dark);
+}
+
+.btn-confirm, #payNowButton {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+	padding: 15px 0;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	border-radius: 50px;
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+	font-size: 1.2rem;
+}
+
+.btn-confirm:hover, #payNowButton:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+	background: linear-gradient(45deg, #ff6b3d, var(--primary));
+	/* Slight change on hover */
+}
+
+#payNowButton {
+	background: linear-gradient(45deg, #28a745, #218838);
+	/* Green for success */
+	box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+#payNowButton:hover {
+	background: linear-gradient(45deg, #218838, #28a745);
+	box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
+}
+/* Modals */
+.modal-content {
+	background: rgba(10, 10, 42, 0.98);
+	border-radius: 15px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	color: white;
+}
+
+.modal-header {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 1.5rem;
+}
+
+.modal-header .modal-title {
+	color: var(--secondary);
+	font-weight: 600;
+}
+
+.modal-header .btn-close {
+	filter: invert(1); /* Makes the close button white */
+}
+
+.modal-body {
+	padding: 2rem;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.confirmation-details {
+	background-color: rgba(255, 255, 255, 0.05);
+	padding: 20px;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	border-left: 3px solid var(--primary);
+}
+
+.confirmation-detail {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 10px;
+	color: white;
+}
+
+.confirmation-detail strong {
+	color: var(--secondary);
+}
+
+.modal-footer {
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	padding: 1.5rem;
+}
+
+.modal-footer .btn-secondary {
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	color: white;
+	transition: all 0.3s;
+}
+
+.modal-footer .btn-secondary:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.4);
+}
+
+.modal-footer .btn-primary {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+	transition: all 0.3s;
+}
+
+.modal-footer .btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+}
+
+.modal-body .bi-check-circle-fill {
+	color: var(--primary) !important;
+	/* Ensure primary color for success icon */
+}
+/* Footer */
+.footer {
+	background: rgba(10, 10, 42, 0.9);
+	color: white;
+	padding: 3rem 0;
+	margin-top: 3rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-logo {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.footer-logo i {
+	color: var(--secondary);
+	margin-right: 10px;
+}
+
+.footer p {
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: 1.5rem;
+}
+
+.footer-links h5 {
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin-bottom: 1.5rem;
+	position: relative;
+	color: white;
+}
+
+.footer-links h5::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	left: 0;
+	width: 40px;
+	height: 3px;
+	background: linear-gradient(45deg, var(--primary), var(--secondary));
+	border-radius: 2px;
+}
+
+.footer-links ul {
+	list-style: none;
+	padding: 0;
+}
+
+.footer-links li {
+	margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+	color: rgba(255, 255, 255, 0.7);
+	text-decoration: none;
+	transition: all 0.3s;
+}
+
+.footer-links a:hover {
+	color: var(--secondary);
+	padding-left: 5px;
+}
+
+.social-links a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 50%;
+	color: white;
+	margin-right: 10px;
+	transition: all 0.3s;
+}
+
+.social-links a:hover {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	transform: translateY(-3px);
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.3);
+}
+
+.copyright {
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	padding-top: 1.5rem;
+	margin-top: 2rem;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 0.9rem;
+}
+/* Particle animation - added to original CSS for consistency */
+.particle {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: -1;
+}
+
+.custom-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 2000;
+	align-items: center;
+	justify-content: center;
+	backdrop-filter: blur(5px);
+}
+
+.modal-content {
+	background: rgba(10, 10, 42, 0.95);
+	padding: 2rem;
+	border-radius: 12px;
+	width: 100%;
+	max-width: 500px;
+	border: 1px solid rgba(255, 204, 0, 0.2);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	text-align: center;
+}
+
+.modal-content h5 {
+	font-size: 1.5rem;
+	margin-bottom: 1rem;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+}
+
+.modal-content p {
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: 1.5rem;
+}
+
+.modal-buttons {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.modal-buttons .btn {
+	padding: 0.75rem 1.5rem;
+	border-radius: 8px;
+	font-weight: 600;
+	transition: all 0.3s;
+}
+
+.modal-buttons .btn-outline-secondary {
+	background: transparent;
+	color: white;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-buttons .btn-outline-secondary:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: white;
+}
+
+.modal-buttons .btn-primary {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+}
+
+.modal-buttons .btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
+}
+
+/* Responsive adjustments */
+@media ( max-width : 768px) {
+	.navbar-brand {
+		font-size: 1.5rem;
+	}
+	.navbar-nav {
+		align-items: flex-start;
+	}
+	.nav-link {
+		padding: 8px 15px;
+	}
+	.search-bar {
+		width: 100%;
+		margin-bottom: 15px;
+	}
+	.movie-info .col-md-3, .movie-info .col-md-9 {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+	.movie-poster {
+		text-align: center;
+		margin-bottom: 20px;
+	}
+	.seat-row {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	.seat {
+		width: 35px;
+		height: 35px;
+		margin: 3px;
+		font-size: 13px;
+	}
+	.seat-label {
+		width: 30px;
+		height: 30px;
+		font-size: 1rem;
+	}
+	.footer {
+		text-align: center;
+	}
+	.footer-links h5::after {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	.social-links {
+		justify-content: center;
+	}
+}
+</style>
+</head>
+<body>
+	<!-- Header -->
+	<nav class="navbar navbar-expand-lg navbar-dark d-flex">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/user/movies"> <i
+				class="bi bi-film"></i>Namma Tickets
+			</a>
+
+			<button class="navbar-toggler" data-bs-toggle="collapse"
+				data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse mx-3 justify-content-evenly"
+				id="navbarNav">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item"><a class="nav-link"
+						href="/user/all-movies"> <i class="bi bi-film"></i> All Movies
+					</a></li>
+					<li class="nav-item"><a class="nav-link"
+						href="/user/my-bookings"> <i class="bi bi-ticket-perforated"></i>
+							My Bookings
+					</a></li>
+				</ul>
+
+				<div class="dropdown">
+					<a href="#"
+							class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+							id="userDropdown" data-bs-toggle="dropdown">
+                            <img th:src="@{'/user/image/' + ${user.id}}"
+							class="rounded-circle" width="45" height="45"
+							onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'"
+							style="object-fit: cover;">
+                    </a>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li><a class="dropdown-item" href="/user/profile"> <i
+								class="bi bi-person"></i> Profile
+						</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="#" id="logoutBtn"> <i
+								class="bi bi-box-arrow-right"></i> Logout
+						</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container booking-container mt-4">
+		<div class="movie-info">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="movie-poster">
+						<img th:src="@{'/user/movies/image/' + ${movie.id}}"
+							th:alt="${movie.title}"
+							onerror="this.src='https://picsum.photos/seed/movie/300/450.jpg'"
+							class="img-fluid">
+					</div>
+				</div>
+				<div class="col-md-9">
+					<div class="movie-details">
+						<h2 th:text="${movie.title}">Movie Title</h2>
+						<h5 th:text="${movie.description}">Movie Description</h5>
+						<p class="text-muted"
+							th:text="${movie.genre} + ' • ' + ${movie.duration} + ' min'">Genre
+							• Duration</p>
+						<div class="movie-meta">
+							<div class="row">
+								<div class="col-md-6">
+									<p class="mb-1">
+										<i class="bi bi-calendar-event me-2"
+											style="color: var(--secondary);"></i> <strong>Release
+											Date:</strong> <span
+											th:text="${#temporals.format(movie.releaseDate, 'dd MMM yyyy')}">Release
+											Date</span>
+									</p>
+								</div>
+								<div class="col-md-6">
+									<p class="mb-1">
+										<i class="bi bi-clock me-2" style="color: var(--secondary);"></i>
+										<strong>Duration:</strong> <span
+											th:text="${movie.duration} + ' minutes'">Duration</span>
+									</p>
+								</div>
+								<div class="col-md-6">
+									<p class="mb-1">
+										<i class="bi bi-translate me-2"
+											style="color: var(--secondary);"></i> <strong>Language:</strong>
+										<span th:text="${movie.language}">Language</span>
+									</p>
+								</div>
+								<div class="col-md-6">
+									<p class="mb-1">
+										<i class="bi bi-tags me-2" style="color: var(--secondary);"></i>
+										<strong>Genre:</strong> <span th:text="${movie.genre}">Genre</span>
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="show-details mt-3">
+							<h5>Show Details</h5>
+							<p>
+								<strong>Theater:</strong> <span th:text="${show.screen}">Screen</span><br>
+								<strong>Date:</strong> <span
+									th:text="${#temporals.format(show.showDate, 'dd MMM yyyy')}">Date</span><br>
+								<strong>Time:</strong> <span th:text="${show.showTime}">Time</span><br>
+								<strong>Price:</strong> ₹<span th:text="${show.price}">Price</span>
+								per seat
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="seat-layout">
+			<div class="screen">SCREEN</div>
+			<div class="legend">
+				<div class="legend-item">
+					<div class="legend-box available"></div>
+					<span>Available</span>
+				</div>
+				<div class="legend-item">
+					<div class="legend-box selected"></div>
+					<span>Selected</span>
+				</div>
+				<div class="legend-item">
+					<div class="legend-box booked"></div>
+					<span>Booked</span>
+				</div>
+			</div>
+			<div class="seat-container" id="seatContainer"></div>
+		</div>
+		<div class="booking-summary card">
+			<div class="card-body">
+				<h5 class="card-title">Booking Summary</h5>
+				<div class="summary-item">
+					<span><strong>Selected Seats:</strong></span> <span
+						id="selectedSeats">None</span>
+				</div>
+				<div class="summary-item">
+					<span><strong>Total Seats:</strong></span> <span id="totalSeats">0</span>
+				</div>
+				<div class="summary-item">
+					<span><strong>Total Amount:</strong></span> <span id="totalAmount">₹
+						0</span>
+				</div>
+				<button class="btn btn-primary btn-confirm btn-lg w-100 mt-4"
+					id="confirmBooking">Confirm Booking</button>
+				<button class="btn btn-success btn-lg w-100 mt-2" id="payNowButton"
+					style="display: none;">Pay Now</button>
+				<div class="loader mt-2" style="display: none;">
+					<div class="spinner-border text-primary" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Booking Confirmation Modal -->
+	<div class="modal fade" id="bookingConfirmationModal" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Booking Confirmation</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure you want to book the following seats?</p>
+					<div class="confirmation-details">
+						<div class="confirmation-detail">
+							<strong>Movie:</strong> <span id="confirmMovie"></span>
+						</div>
+						<div class="confirmation-detail">
+							<strong>Show:</strong> <span id="confirmShow"></span>
+						</div>
+						<div class="confirmation-detail">
+							<strong>Seats:</strong> <span id="confirmSeats"></span>
+						</div>
+						<div class="confirmation-detail">
+							<strong>Total Amount:</strong> <span id="confirmAmount"></span>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" id="finalConfirm">Confirm</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Success Modal -->
+	<div class="modal fade" id="successModal" tabindex="-1"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content text-center">
+				<div class="modal-header">
+					<h5 class="modal-title">Booking Successful</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<i class="bi bi-check-circle-fill text-success"
+						style="font-size: 4rem;"></i>
+					<h4 class="mt-3">Thank You!</h4>
+					<p>Your booking has been confirmed successfully.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="viewBookings">View
+						My Bookings</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<footer class="footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+					<a class="navbar-brand" href="/user/movies" style="font-size: 30px">
+						<i class="bi bi-film"></i>Namma Tickets
+					</a>
+					<p>Book your movie tickets online and enjoy the latest blockbusters in theaters near you.</p>
+					<div class="social-links">
+						<a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i
+							class="bi bi-twitter"></i></a> <a href="#"><i
+							class="bi bi-instagram"></i></a> <a href="#"><i
+							class="bi bi-youtube"></i></a>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="footer-links">
+						<h5>Company</h5>
+						<ul>
+							<li><a href="#">About Us</a></li>
+							<li><a href="#">Careers</a></li>
+							<li><a href="#">Contact Us</a></li>
+							<li><a href="#">Privacy Policy</a></li>
+							<li><a href="#">Terms & Conditions</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="footer-links">
+						<h5>Help</h5>
+						<ul>
+							<li><a href="#">FAQ</a></li>
+							<li><a href="#">Booking Guide</a></li>
+							<li><a href="#">Cancellation Policy</a></li>
+							<li><a href="#">Refund Policy</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="footer-links">
+						<h5>Newsletter</h5>
+						<p>Subscribe to our newsletter for the latest movie updates
+							and offers.</p>
+						<div class="input-group mb-3">
+							<input type="email" class="form-control" placeholder="Your Email">
+							<button class="btn btn-primary" type="button">Subscribe</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="copyright">&copy; 2025 NammaTickets. All Rights
+				Reserved.</div>
+		</div>
+	</footer>
+
+	<!-- Logout Confirmation Modal -->
+	<div id="logoutModal" class="custom-modal">
+		<div class="modal-content">
+			<h5>
+				<i class="bi bi-box-arrow-right text-primary"></i> Confirm Logout
+			</h5>
+			<p>Are you sure you want to logout?</p>
+			<div class="modal-buttons">
+				<button id="logoutNo" class="btn btn-outline-secondary">Cancel</button>
+				<button id="logoutYes" class="btn btn-primary">Yes, Logout</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	<script>
+const showId = "[[${show.id}]]";
+const seatPrice = "[[${show.price}]]";
+const movieTitle = "[[${movie.title}]]";
+const showTime = "[[${show.showTime}]]";
+const showDate = "[[${#temporals.format(show.showDate, 'dd MMM yyyy')}]]";
+const screen = "[[${show.screen}]]";
+</script>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+$(document).ready(function () {
+  let selectedSeats = [];
+  let bookingId = null;
+
+  // Generate Seat Layout
+  const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+  let seatHtml = '';
+  rows.forEach(row => {
+    seatHtml += '<div class="seat-row">';
+    seatHtml += `<div class="seat-label me-2">${row}</div>`;
+    for (let i = 1; i <= 8; i++) {
+      seatHtml += `<div class="seat" data-seat="${row}${i}">${i}</div>`;
+    }
+    seatHtml += '</div>';
+  });
+  $('#seatContainer').html(seatHtml);
+
+  // Load Occupied Seats
+  $.get(`/user/shows/${showId}/occupied-seats`, function (data) {
+    if (data && data.length > 0) {
+      data.forEach(seat => {
+        $(`.seat[data-seat='${seat}']`).addClass('booked').off('click');
+      });
+    }
+  });
+
+  // Seat Click Handler
+  $(document).on('click', '.seat:not(.booked)', function () {
+    $(this).toggleClass('selected');
+    const seat = $(this).data('seat');
+    if ($(this).hasClass('selected')) {
+      selectedSeats.push(seat);
+    } else {
+      selectedSeats = selectedSeats.filter(s => s !== seat);
+    }
+    updateBookingSummary();
+  });
+
+  function updateBookingSummary() {
+    const totalSeats = selectedSeats.length;
+    const totalAmount = totalSeats * seatPrice;
+    $('#selectedSeats').text(selectedSeats.join(', ') || 'None');
+    $('#totalSeats').text(totalSeats);
+    $('#totalAmount').text(`₹ ${totalAmount.toFixed(2)}`);
+  }
+
+  $('#confirmBooking').click(function () {
+    if (selectedSeats.length === 0) {
+      alert('Please select at least one seat');
+      return;
+    }
+    $('#confirmMovie').text(movieTitle);
+    $('#confirmShow').text(`${screen} - ${showDate} (${showTime})`);
+    $('#confirmSeats').text(selectedSeats.join(', '));
+    $('#confirmAmount').text(`₹ ${(selectedSeats.length * seatPrice).toFixed(2)}`);
+    const bookingModal = new bootstrap.Modal(document.getElementById('bookingConfirmationModal'));
+    bookingModal.show();
+  });
+
+  $('#finalConfirm').click(function () {
+    const bookingData = {
+      showId: showId,
+      seatNumbers: selectedSeats.join(',')
+    };
+
+    $('#finalConfirm').prop('disabled', true);
+    $('.loader').show();
+
+    $.ajax({
+      url: '/user/bookings',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(bookingData),
+      success: function (response) {
+        const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingConfirmationModal'));
+        bookingModal.hide();
+        bookingId = response.bookingId;
+
+        const totalAmount = selectedSeats.length * seatPrice;
+        handleProceedToPayment({ totalAmount });
+      },
+      error: function (xhr) {
+        const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText || 'Unknown error';
+        alert('Booking failed: ' + errorMsg);
+        $('#finalConfirm').prop('disabled', false);
+        $('.loader').hide();
+      }
+    });
+  });
+
+  $('#viewBookings').click(function () {
+    window.location.href = '/user/my-bookings';
+  });
+
+  $('#logoutBtn').click(function (e) {
+    e.preventDefault();
+    window.location.href = '/logout';
+  });
+
+  function handleProceedToPayment({ totalAmount }) {
+    const amountInPaise = totalAmount * 100;
+
+    fetch(`/getTransaction/${totalAmount}`)
+      .then(res => {
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.orderId) {
+          const options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            order_id: data.orderId,
+            name: "MovieMatic",
+            description: "Movie Ticket Booking",
+            handler: function (response) {
+              $('.loader').hide();
+              $('#bookingId').text(bookingId);
+              $('#successSeats').text(selectedSeats.join(', '));
+              const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+              successModal.show();
+              selectedSeats = [];
+              updateBookingSummary();
+              $('.seat.selected').removeClass('selected');
+            },
+            prefill: {
+              name: "Customer",
+              email: "customer@example.com",
+              contact: "9999999999"
+            },
+            theme: {
+              color: "#4361ee"
+            },
+            modal: {
+              ondismiss: function () {
+                alert("❗ Payment cancelled. Your booking is saved, but payment was not done.");
+              }
+            }
+          };
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          alert("Error: Razorpay order not created.");
+        }
+      })
+      .catch(error => {
+        console.error("Razorpay error:", error);
+        alert("❌ Could not start payment: " + error.message);
+      });
+  }
+});
+
+//Add this to your existing script section
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutModal = document.getElementById('logoutModal');
+
+    // Logout button
+    document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        logoutModal.style.display = 'flex';
+    });
+
+    // Modal buttons
+    document.getElementById('logoutNo')?.addEventListener('click', function() {
+        logoutModal.style.display = 'none';
+    });
+
+    document.getElementById('logoutYes')?.addEventListener('click', function() {
+        window.location.href = '/logout';
+    });
+
+    // Click outside modal
+    logoutModal?.addEventListener('click', function(e) {
+        if (e.target === logoutModal) {
+            logoutModal.style.display = 'none';
+        }
+    });
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && logoutModal.style.display === 'flex') {
+            logoutModal.style.display = 'none';
+        }
+    });
+});
+</script>
+
+
+</body>
+</html>

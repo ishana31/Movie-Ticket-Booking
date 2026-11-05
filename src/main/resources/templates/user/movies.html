@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Namma Tickets - Book Your Movie Tickets</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Bootstrap 5 CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- Font Awesome -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Font -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+	rel="stylesheet">
+<!-- Animate.css -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<!-- Owl Carousel -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+	<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+
+<style>
+:root {
+	--primary: #ff3366;
+	--secondary: #ffcc00;
+	--dark: #0a0a2a;
+	--light: #f8f9fa;
+	--header-height: 60px;
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	background: var(--light);
+	/* background: linear-gradient(rgba(10, 10, 42, 0.95),
+		rgba(10, 10, 42, 0.9)),
+		url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80')
+		no-repeat center center/cover fixed; */
+	color: white;
+	padding-top: var(--header-height);
+	min-height: 100vh;
+}
+
+  .filter-section {
+      margin: 1.5rem 0;
+      padding: 1rem;
+  }
+
+@keyframes float { 0%, 100% {
+	transform: translateY(0) rotate(0deg);
+}
+
+50% { 
+	transform : translateY(-20px)rotate(5deg);
+	}
+}
+
+/* Navbar */
+.navbar {
+	background-color: rgba(10, 10, 42, 0.9);
+	height: var(--header-height);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1000;
+	backdrop-filter: blur(10px);
+	padding: 0 2rem;
+	border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+}
+
+.navbar-brand {
+	font-size: 1.6rem;
+	font-weight: 700;
+	position: relative;
+	display: inline-block;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.navbar-brand i {
+	color: var(--secondary);
+	margin-right: 10px;
+	font-size: 1.8rem;
+}
+
+.nav-link {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 6px;
+	margin: 0 5px;
+	border-radius: 6px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+}
+
+.nav-link i {
+	margin-right: 8px;
+	font-size: 1.1rem;
+}
+
+.nav-link:hover, .nav-link.active {
+	color: white;
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+}
+
+.user-avatar {
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	transition: all 0.3s ease;
+}
+
+.dropdown:hover .user-avatar {
+	border-color: var(--secondary);
+	transform: scale(1.05);
+}
+
+.dropdown-menu {
+	background-color: rgba(10, 10, 42, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(10px);
+}
+
+.dropdown-item {
+	color: rgba(255, 255, 255, 0.8);
+	padding: 8px 16px;
+	transition: all 0.3s;
+}
+
+.dropdown-item:hover {
+	color: white;
+	background-color: rgba(255, 255, 255, 0.1);
+	padding-left: 20px;
+}
+
+.dropdown-item i {
+	width: 20px;
+	text-align: center;
+	margin-right: 10px;
+	color: var(--secondary);
+}
+
+/* Main Content */
+.main-container {
+	position: relative;
+	z-index: 1;
+	padding-bottom: 50px;
+}
+
+/* Page Title */
+.section-title {
+	font-size: 1.7rem;
+	font-weight: 700;
+	margin: 30px 0 5px;
+	position: relative;
+	display: inline-block;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.section-title::after {
+	content: '';
+	position: absolute;
+	bottom: -10px;
+	left: 0;
+	width: 60px;
+	height: 4px;
+	background: linear-gradient(45deg, var(--primary), var(--secondary));
+	border-radius: 2px;
+}
+
+/* Movie Cards */
+.movie-card {
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	border-radius: 15px;
+	overflow: hidden;
+	margin: 25px 0;
+	transition: all 0.3s ease;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.movie-card:hover {
+	transform: translateY(-10px);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+	border-color: #ff6b3d;
+}
+
+.movie-poster {
+	position: relative;
+	width: 100%;
+	padding-top: 150%;
+	overflow: hidden;
+}
+
+.movie-poster img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.5s ease;
+}
+
+.movie-card:hover .movie-poster img {
+	transform: scale(1.1);
+}
+
+.movie-info {
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.movie-title {
+	font-weight: 600;
+	font-size: 1.2rem;
+	margin-bottom: 8px;
+	color: var(--dark);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.movie-meta {
+	color: var(--dark);
+	font-size: 0.9rem;
+	margin-bottom: 15px;
+}
+
+.movie-actions {
+	margin-top: auto;
+}
+
+.btn-outline-primary {
+	color: #ff6b3d;
+	border-color: var(--primary);
+	transition: all 0.3s;
+}
+
+.btn-outline-primary:hover {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border-color: transparent;
+	transform: translateY(-2px);
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.3);
+}
+
+
+/* Hero Carousel */
+.hero-carousel {
+	position: relative;
+}
+
+.hero-carousel .item {
+	position: relative;
+	height: 630px;
+	border-radius: 15px;
+	overflow: hidden;
+	margin-bottom: 10px;
+	/* box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4); */
+}
+
+.hero-carousel img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.hero-carousel .item::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.9)
+		100%);
+	z-index: 1;
+}
+
+.hero-content {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	padding: 40px;
+	color: white;
+	z-index: 2;
+}
+
+.hero-content h2 {
+	font-size: 2rem;
+	font-weight: 700;
+	margin-bottom: 20px;
+	background: linear-gradient(45deg, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.hero-content p {
+	font-size: 1.1rem;
+	line-height: 1.6;
+	max-width: 80%;
+	margin-bottom: 25px;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.btn-primary {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: none;
+	padding: 10px 20px;
+	border-radius: 50px;
+	font-weight: 600;
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
+	transition: all 0.3s;
+}
+
+.btn-primary:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
+}
+
+/* Carousel Navigation */
+.movie-carousel .owl-nav {
+	position: absolute;
+	top: -40px;
+	right: 0;
+}
+
+.movie-carousel .owl-nav button {
+	width: 45px;
+	height: 45px;
+	border-radius: 50%;
+	background: linear-gradient(45deg, var(--primary), #ff6b3d) !important;
+	color: white !important;
+	margin-left: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	transition: all 0.3s ease;
+}
+
+.movie-carousel .owl-nav button:hover {
+	background: linear-gradient(45deg, #ff6b3d, var(--primary)) !important;
+	transform: translateY(-3px) scale(1.1);
+}
+
+/* Footer */
+.footer {
+	background: rgba(10, 10, 42, 0.9);
+	color: white;
+	padding: 3rem 0;
+	margin-top: 3rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-logo {
+	font-size: 1.8rem;
+	font-weight: 700;
+	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+}
+
+.footer-logo i {
+	color: var(--secondary);
+	margin-right: 10px;
+}
+
+.footer p {
+	color: rgba(255, 255, 255, 0.7);
+	margin-bottom: 1.5rem;
+}
+
+.footer-links h5 {
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin-bottom: 1.5rem;
+	position: relative;
+	color: white;
+}
+
+.footer-links h5::after {
+	content: '';
+	position: absolute;
+	bottom: -8px;
+	left: 0;
+	width: 40px;
+	height: 3px;
+	background: linear-gradient(45deg, var(--primary), var(--secondary));
+	border-radius: 2px;
+}
+
+.footer-links ul {
+	list-style: none;
+	padding: 0;
+}
+
+.footer-links li {
+	margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+	color: rgba(255, 255, 255, 0.7);
+	text-decoration: none;
+	transition: all 0.3s;
+}
+
+.footer-links a:hover {
+	color: var(--secondary);
+	padding-left: 5px;
+}
+
+.social-links a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 50%;
+	color: white;
+	margin-right: 10px;
+	transition: all 0.3s;
+}
+
+.social-links a:hover {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	transform: translateY(-3px);
+	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.3);
+}
+
+.copyright {
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	padding-top: 1.5rem;
+	margin-top: 2rem;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 0.9rem;
+}
+
+/* Custom Modal */
+.custom-modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 2000;
+	justify-content: center;
+	align-items: center;
+	backdrop-filter: blur(5px);
+}
+
+.modal-content {
+	background: rgba(10, 10, 42, 0.95);
+	padding: 2rem;
+	border-radius: 15px;
+	max-width: 400px;
+	width: 90%;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	animation: modalFadeIn 0.3s;
+	color: white;
+}
+
+@keyframes modalFadeIn {from { opacity:0;
+	transform: translateY(-20px);
+}
+
+to {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+}
+.modal-buttons {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 1.5rem;
+	gap: 10px;
+}
+
+.modal-buttons .btn {
+	min-width: 100px;
+}
+
+/* Responsive */
+@media ( max-width : 768px) {
+	.hero-carousel .item {
+		height: 350px;
+	}
+	.hero-content h2 {
+		font-size: 2rem;
+	}
+	.hero-content p {
+		max-width: 100%;
+	}
+	.movie-carousel .owl-nav {
+		position: relative;
+		top: 0;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+	.footer {
+		text-align: center;
+	}
+	.footer-links {
+		margin-bottom: 30px;
+	}
+	.footer-links h5::after {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	.social-links {
+		justify-content: center;
+	}
+}
+
+/* Particle animation */
+.particle {
+	position: absolute;
+	background: rgba(255, 255, 255, 0.8);
+	border-radius: 50%;
+	pointer-events: none;
+	z-index: -1;
+}
+</style>
+</head>
+<body>
+	<!-- Header -->
+	<nav class="navbar navbar-expand-lg navbar-dark d-flex">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/user/movies"> <i
+				class="bi bi-film"></i> Namma Tickets
+			</a>
+
+			<button class="navbar-toggler" data-bs-toggle="collapse"
+				data-bs-target="#navbarNav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse mx-3 justify-content-evenly"
+				id="navbarNav">
+				<ul class="navbar-nav me-auto">
+					<li class="nav-item"><a class="nav-link"
+						href="/user/all-movies"> <i class="bi bi-film"></i> All Movies
+					</a></li>
+					<li class="nav-item"><a class="nav-link"
+						href="/user/my-bookings"> <i class="bi bi-ticket-perforated"></i>
+							My Bookings
+					</a></li>
+					<!-- <li class="nav-item"><a class="nav-link" href="/user/about"> <i
+							class="bi bi-info-circle"></i> About
+					</a></li>
+					<li class="nav-item"><a class="nav-link" href="/user/contact">
+							<i class="bi bi-envelope"></i> Contact
+					</a></li> -->
+				</ul>
+
+				<div class="dropdown">
+					<a href="#" class="d-flex align-items-center text-decoration-none"
+						id="userDropdown" data-bs-toggle="dropdown"> <img
+						th:src="@{'/user/image/' + ${user.id}}" class="user-avatar"
+						onerror="this.src='https://via.placeholder.com/150x150?text=No+Image'">
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li><a class="dropdown-item" href="/user/profile"> <i
+								class="bi bi-person"></i> Profile
+						</a></li>
+						<li><hr class="dropdown-divider"></li>
+						<li><a class="dropdown-item" href="#" id="logoutBtn"> <i
+								class="bi bi-box-arrow-right"></i> Logout
+						</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Main Content -->
+	<div class="container main-container py-4">
+		<!-- Hero Carousel -->
+		<div class="hero-carousel owl-carousel owl-theme mb-5">
+			<div class="item" th:each="movie : ${movies}">
+				<img th:src="@{'/user/movies/background/' + ${movie.id}}"
+					th:alt="${movie.title}" onerror="this.src=''">
+				<div class="hero-content">
+					<h2 th:text="${movie.title}">Movie Title</h2>
+					<a th:href="@{'/user/movie-details/' + ${movie.id}}"
+						class="btn btn-primary"> <i class="bi bi-ticket-perforated"></i>
+						Book Now
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Top 10 Section -->
+		<div class="section-highlight">
+			<h2 class="section-title">Top 10 Movies</h2>
+			<div class="owl-carousel movie-carousel">
+				<div class="item" th:each="movie : ${topMovies}">
+					<div class="movie-card">
+						<div class="movie-poster">
+							<img th:src="@{'/user/movies/image/' + ${movie.id}}"
+								th:alt="${movie.title}"
+								onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+						</div>
+						<div class="movie-info">
+							<h5 class="movie-title" th:text="${movie.title}">Movie Title</h5>
+							<div class="movie-meta">
+								<span th:text="${movie.genre}">Genre</span> • <span
+									th:text="${movie.language}">Language</span> • <span
+									th:text="${movie.duration} + ' min'">Duration</span>
+							</div>
+							<div class="movie-actions">
+								<a th:href="@{'/user/movie-details/' + ${movie.id}}"
+									class="btn btn-outline-primary"> <i
+									class="bi bi-ticket-perforated"></i> Book
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- New Releases Section -->
+		<div class="section-highlight" th:if="${not newReleases.empty}">
+			<h2 class="section-title">New Releases</h2>
+			<div class="owl-carousel movie-carousel">
+				<div class="item" th:each="movie : ${newReleases}">
+					<div class="movie-card">
+						<div class="movie-poster">
+							<img th:src="@{'/user/movies/image/' + ${movie.id}}"
+								th:alt="${movie.title}"
+								onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+						</div>
+						<div class="movie-info">
+							<h5 class="movie-title" th:text="${movie.title}">Movie Title</h5>
+							<div class="movie-meta">
+								<span th:text="${movie.genre}">Genre</span> • <span
+									th:text="${movie.language}">Language</span> • <span
+									th:text="${movie.duration} + ' min'">Duration</span>
+							</div>
+							<div class="movie-actions">
+								<a th:href="@{'/user/movie-details/' + ${movie.id}}"
+									class="btn btn-outline-primary"> <i
+									class="bi bi-ticket-perforated"></i> Book
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Now Showing Section -->
+		<div class="section-highlight">
+			<h2 class="section-title">Now Showing</h2>
+			<div class="owl-carousel movie-carousel">
+				<div class="item" th:each="movie : ${movies}">
+					<div class="movie-card">
+						<div class="movie-poster">
+							<img th:src="@{'/user/movies/image/' + ${movie.id}}"
+								th:alt="${movie.title}"
+								onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+						</div>
+						<div class="movie-info">
+							<h5 class="movie-title" th:text="${movie.title}">Movie Title</h5>
+							<div class="movie-meta">
+								<span th:text="${movie.genre}">Genre</span> • <span
+									th:text="${movie.language}">Language</span> • <span
+									th:text="${movie.duration} + ' min'">Duration</span>
+							</div>
+							<div class="movie-actions">
+								<a th:href="@{'/user/movie-details/' + ${movie.id}}"
+									class="btn btn-outline-primary"> <i
+									class="bi bi-ticket-perforated"></i> Book
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Coming Soon Section -->
+		<div class="section-highlight" th:if="${not upcomingMovies.empty}">
+			<h2 class="section-title">Coming Soon</h2>
+			<div class="owl-carousel movie-carousel">
+				<div class="item" th:each="movie : ${upcomingMovies}">
+					<div class="movie-card">
+						<div class="movie-poster">
+							<img th:src="@{'/user/movies/image/' + ${movie.id}}"
+								th:alt="${movie.title}"
+								onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
+						</div>
+						<div class="movie-info">
+							<h5 class="movie-title" th:text="${movie.title}">Movie Title</h5>
+							<div class="movie-meta">
+								<span th:text="${movie.genre}">Genre</span> • <span
+									th:text="${movie.language}">Language</span> • <span
+									th:text="${#temporals.format(movie.releaseDate, 'MMM dd')}">Release
+									Date</span>
+							</div>
+							<div class="movie-actions">
+								<button class="btn btn-outline-secondary" disabled>
+									<i class="bi bi-clock"></i> Coming Soon
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<footer class="footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4">
+					<a class="navbar-brand" href="/user/movies" style="font-size: 30px"> <i
+						class="bi bi-film"></i>Namma Tickets
+					</a>
+					<p>Book your movie tickets online and enjoy the latest
+						blockbusters in theaters near you.</p>
+					<div class="social-links">
+						<a href="#"><i class="bi bi-facebook"></i></a> <a href="#"><i
+							class="bi bi-twitter"></i></a> <a href="#"><i
+							class="bi bi-instagram"></i></a> <a href="#"><i
+							class="bi bi-youtube"></i></a>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="footer-links">
+						<h5>Company</h5>
+						<ul>
+							<li><a href="#">About Us</a></li>
+							<li><a href="#">Careers</a></li>
+							<li><a href="#">Contact Us</a></li>
+							<li><a href="#">Privacy Policy</a></li>
+							<li><a href="#">Terms & Conditions</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="footer-links">
+						<h5>Help</h5>
+						<ul>
+							<li><a href="#">FAQ</a></li>
+							<li><a href="#">Booking Guide</a></li>
+							<li><a href="#">Cancellation Policy</a></li>
+							<li><a href="#">Refund Policy</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="footer-links">
+						<h5>Newsletter</h5>
+						<p>Subscribe to our newsletter for the latest movie updates
+							and offers.</p>
+						<div class="input-group mb-3">
+							<input type="email" class="form-control" placeholder="Your Email">
+							<button class="btn btn-primary" type="button">Subscribe</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="copyright">&copy; 2025 Namma Tickets. All Rights
+				Reserved.</div>
+		</div>
+	</footer>
+
+	<!-- Logout Confirmation Modal -->
+	<div id="logoutModal" class="custom-modal">
+		<div class="modal-content">
+			<h5>
+				<i class="bi bi-box-arrow-right text-primary"></i> Confirm Logout
+			</h5>
+			<p>Are you sure you want to logout?</p>
+			<div class="modal-buttons">
+				<button id="logoutNo" class="btn btn-outline-secondary">Cancel</button>
+				<button id="logoutYes" class="btn btn-primary">Yes, Logout</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+	<script>
+    $(document).ready(function(){
+      // Initialize hero carousel
+      $('.hero-carousel').owlCarousel({
+        loop: true,
+        margin: 10,
+       	/* nav: true, */
+        dots: true,
+        autoplay: true,
+        autoplayTimeout: 5000,
+        responsive: {
+          0: { items: 1 },
+          600: { items: 1 },
+          1000: { items: 1 }
+        },
+        animateOut: 'fadeOut',
+        animateIn: 'fadeIn',
+        /* navText: ['<i class="bi bi-chevron-left"></i>', '<i class="bi bi-chevron-right"></i>'] */
+      });
+      
+      // Initialize movie carousels
+      $('.movie-carousel').owlCarousel({
+        loop: false,
+        margin: 20,
+        nav: true,
+        dots: false,
+        responsive: {
+          0: { items: 2 },
+          600: { items: 3 },
+          1000: { items: 4 }
+        },
+        navText: ['<i class="bi bi-chevron-left"></i>', '<i class="bi bi-chevron-right"></i>']
+      });
+      
+      // Highlight current page in navbar
+      $('.nav-link').each(function() {
+        if ($(this).attr('href') === window.location.pathname) {
+          $(this).addClass('active');
+        }
+      });
+    });
+    
+    // Logout functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoutModal = document.getElementById('logoutModal');
+      
+      // Add click handler to logout button
+      document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        logoutModal.style.display = 'flex';
+      });
+      
+      // Logout modal handlers
+      document.getElementById('logoutNo')?.addEventListener('click', function() {
+        logoutModal.style.display = 'none';
+      });
+      
+      document.getElementById('logoutYes')?.addEventListener('click', function() {
+        window.location.href = '/logout';
+      });
+      
+      // Close modal when clicking outside
+      logoutModal?.addEventListener('click', function(e) {
+        if (e.target === logoutModal) {
+          logoutModal.style.display = 'none';
+        }
+      });
+      
+      // Close modal with ESC key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && logoutModal.style.display === 'flex') {
+          logoutModal.style.display = 'none';
+        }
+      });
+      
+      // Create particles on click
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.modal-content') || e.target.closest('.navbar')) return;
+        
+        const particles = document.createElement('div');
+        particles.className = 'particle';
+        document.body.appendChild(particles);
+        
+        // Position particles
+        particles.style.left = e.clientX + 'px';
+        particles.style.top = e.clientY + 'px';
+        
+        // Random size
+        const size = Math.random() * 15 + 5;
+        particles.style.width = size + 'px';
+        particles.style.height = size + 'px';
+        
+        // Random color
+        const colors = ['#ff3366', '#ffcc00', '#ffffff', '#4dabf7'];
+        particles.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        // Animation
+        particles.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px)`;
+        particles.style.opacity = 0;
+        
+        // Remove after animation
+        setTimeout(() => {
+          particles.remove();
+        }, 1000);
+      });
+    });
+  </script>
+</body>
+</html>
