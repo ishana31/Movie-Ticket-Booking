@@ -2,18 +2,25 @@ package com.MovieMatic.service;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.MovieMatic.model.Booking;
+import com.MovieMatic.model.SeatStatus;
 import com.MovieMatic.model.Show;
+import com.MovieMatic.model.ShowSeat;
 import com.MovieMatic.model.User;
 import com.MovieMatic.repository.BookingRepository;
+import com.MovieMatic.repository.ShowSeatRepository;
 // Corrected iText imports
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
@@ -34,6 +41,9 @@ public class BookingService {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @Autowired
+    private ShowSeatRepository showSeatRepository;
+
     public void saveBooking(Booking booking) {
         bookingRepository.save(booking);
     }
@@ -46,30 +56,35 @@ public class BookingService {
         return bookingRepository.findByUser(user);
     }
 
-    
-    
     public List<String> getOccupiedSeats(Show show) {
-        List<Booking> bookings = bookingRepository.findByShow(show);
+        Set<String> occupied = new LinkedHashSet<>();
 
-        List<String> occupied = new ArrayList<>();
-        for (Booking booking : bookings) {
-            String[] seats = booking.getSeatNumbers().split(","); // e.g., "A1,B2"
-            occupied.addAll(Arrays.asList(seats));
+        if (show != null && show.getId() != null) {
+            LocalDateTime cutoff = LocalDateTime.now().minusSeconds(600);
+            List<ShowSeat> showSeats = showSeatRepository.findByShowId(show.getId());
+            for (ShowSeat ss : showSeats) {
+                if (ss.getStatus() == SeatStatus.BOOKED) {
+                    occupied.add(ss.getSeatNumber());
+                } else if (ss.getStatus() == SeatStatus.HELD && ss.getHeldAt() != null && ss.getHeldAt().isAfter(cutoff)) {
+                    occupied.add(ss.getSeatNumber());
+                }
+            }
         }
-        return occupied;
+
+        List<Booking> bookings = bookingRepository.findByShow(show);
+        for (Booking booking : bookings) {
+            if (booking.getSeatNumbers() != null) {
+                String[] seats = booking.getSeatNumbers().split(",");
+                for (String s : seats) {
+                    String trimmed = s.trim();
+                    if (!trimmed.isEmpty()) {
+                        occupied.add(trimmed);
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(occupied);
     }
-    
-    
-//    public List<String> getOccupiedSeats(Show show) {
-//        List<Booking> bookings = bookingRepository.findByShow(show);
-//        List<String> occupied = new ArrayList<>();
-//
-//        for (Booking b : bookings) {
-//            String[] seats = b.getSeatNumbers().split(",");
-//            occupied.addAll(Arrays.asList(seats));
-//        }
-//        return occupied;
-//    }
 
     public long getTotalBookingsCount() {
         return bookingRepository.count();
@@ -84,16 +99,11 @@ public class BookingService {
         return bookingRepository.findById(id).orElse(null);
     }
     
+    @Transactional
     public void deleteByShowId(Long showId) {
+        showSeatRepository.deleteByShowId(showId);
         bookingRepository.deleteByShowId(showId);
     }
-    
-
-//    public void deleteBooking(Long id) {
-//        bookingRepository.deleteById(id);
-//    }	
-//    
-   
 
     public void generatePdfTicket(Long bookingId, HttpServletResponse response) {
         try {
@@ -119,7 +129,6 @@ public class BookingService {
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Color.BLACK);
             Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.BLACK);
 
-
             // Title
             Paragraph title = new Paragraph("🎬 Movie Ticket", titleFont);
             title.setAlignment(Paragraph.ALIGN_CENTER);
@@ -133,10 +142,6 @@ public class BookingService {
             table.setSpacingBefore(10f); // Space before table
             table.setSpacingAfter(10f); // Space after table
             table.setHorizontalAlignment(Element.ALIGN_CENTER); // Center the table
-
-            // Table Headers (Optional, but good for clarity)
-            // table.addCell(getCell("Detail", PdfPCell.ALIGN_LEFT, headerFont));
-            // table.addCell(getCell("Value", PdfPCell.ALIGN_LEFT, headerFont));
 
             // Booking Details
             table.addCell(getCell("Booking ID:", PdfPCell.ALIGN_LEFT, headerFont));
@@ -173,7 +178,6 @@ public class BookingService {
             throw new RuntimeException("An unexpected error occurred while generating PDF: " + e.getMessage(), e);
         }
     }
-
 
     private PdfPCell getCell(String text, int alignment, Font font) {
         PdfPCell cell = new PdfPCell(new Phrase(text, font));

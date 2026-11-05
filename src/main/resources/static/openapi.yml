@@ -1,0 +1,138 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic Seat Reservation & Hold API
+  version: 1.0.0
+  description: Concurrency-safe seat reservation system with temporary hold (10-minute TTL) and auto-release.
+paths:
+  /user/shows/{showId}/hold:
+    post:
+      summary: Hold seats temporarily
+      description: Atomically places a 10-minute temporary hold on selected seats for the current user.
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatHoldRequest'
+            example:
+              seatNumbers: "A1,A2"
+      responses:
+        '200':
+          description: Seats held successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatHoldResponse'
+              example:
+                status: "HELD"
+                expiresInSeconds: 600
+        '400':
+          description: Invalid request or empty seat selection
+        '409':
+          description: One or more selected seats are already held or booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: "Seats already held or booked"
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Get occupied seats
+      description: Returns lists of permanently booked seats and currently active held seats for a show.
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Occupied seats retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupiedSeatsResponse'
+              example:
+                bookedSeats: ["B1", "B2"]
+                heldSeats: ["A1", "A2"]
+
+  /user/bookings:
+    post:
+      summary: Create booking / complete checkout
+      description: Transitions seats from HELD to BOOKED and creates a persistent booking record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                showId:
+                  type: integer
+                  format: int64
+                seatNumbers:
+                  type: string
+              required:
+                - showId
+                - seatNumbers
+      responses:
+        '200':
+          description: Booking confirmed successfully
+        '409':
+          description: Seats are not held by the user or hold has expired
+
+components:
+  schemas:
+    SeatHoldRequest:
+      type: object
+      required:
+        - seatNumbers
+      properties:
+        seatNumbers:
+          type: string
+          description: Comma-separated seat identifiers (e.g. "A1,A2")
+        userId:
+          type: integer
+          format: int64
+          description: Optional user ID for API/test callers
+
+    SeatHoldResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "HELD"
+        expiresInSeconds:
+          type: integer
+          example: 600
+
+    OccupiedSeatsResponse:
+      type: object
+      properties:
+        bookedSeats:
+          type: array
+          items:
+            type: string
+          example: ["B1", "B2"]
+        heldSeats:
+          type: array
+          items:
+            type: string
+          example: ["A1", "A2"]
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seats already held or booked"

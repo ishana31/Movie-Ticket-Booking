@@ -2,10 +2,12 @@ package com.MovieMatic.controller;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.MovieMatic.dto.OccupiedSeatsResponse;
+import com.MovieMatic.dto.SeatHoldRequest;
+import com.MovieMatic.dto.SeatHoldResponse;
+import com.MovieMatic.exception.SeatUnavailableException;
 import com.MovieMatic.model.Booking;
 import com.MovieMatic.model.Movie;
 import com.MovieMatic.model.Show;
@@ -34,6 +40,7 @@ import com.MovieMatic.repository.UserRepository;
 import com.MovieMatic.service.BookingService;
 import com.MovieMatic.service.EmailService;
 import com.MovieMatic.service.MovieService;
+import com.MovieMatic.service.SeatReservationService;
 import com.MovieMatic.service.ShowService;
 import com.MovieMatic.service.UserService;
 import com.itextpdf.text.BaseColor;
@@ -75,17 +82,9 @@ public class UserController {
     
     @Autowired
     private UserRepository userRepository;
-//
-//    @GetMapping("/movies")
-//    public String listMovies(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-//    	User user = userService.findByEmail(userDetails.getUsername());
-//        model.addAttribute("user", user);
-//        model.addAttribute("movies", movieService.getNowShowing());
-//        model.addAttribute("topMovies", showService.getTop10MoviesByPrice());
-//        model.addAttribute("newReleases", movieService.getNewReleases());
-//        model.addAttribute("upcomingMovies", movieService.getUpcomingMovies());
-//        return "user/movies";
-//    }
+
+    @Autowired
+    private SeatReservationService seatReservationService;
     
     @GetMapping("/movies")
     public String listMovies(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -98,19 +97,6 @@ public class UserController {
         return "user/movies";
     }
     
-//    @GetMapping("/movies/genre/{genre}")
-//    public String listMoviesByGenre(@PathVariable String genre, Model model, @AuthenticationPrincipal UserDetails userDetails) {
-//        User user = userService.findByEmail(userDetails.getUsername());
-//        model.addAttribute("userName", user.getName());
-//        model.addAttribute("movies", movieService.getNowShowing());
-//        model.addAttribute("topMovies", showService.getTop10MoviesByPrice());
-//        model.addAttribute("newReleases", movieService.getNewReleases());
-//        model.addAttribute("upcomingMovies", movieService.getUpcomingMovies());
-//        model.addAttribute("filteredShows", showService.getShowsByGenre(genre));
-//        model.addAttribute("selectedGenre", genre);
-//        return "user/movies";
-//    }
-    
     @GetMapping("movies/filter-by-genre")
     @ResponseBody
     public List<Movie> filterMoviesByGenre(@RequestParam String genre) {
@@ -121,7 +107,6 @@ public class UserController {
         }
     }
 
-    
     @GetMapping("/movies/top")
     public String topMovies(Model model) {
         model.addAttribute("movies", showService.getTop10MoviesByPrice());
@@ -142,13 +127,6 @@ public class UserController {
         model.addAttribute("sectionTitle", "Coming Soon");
         return "user/movie-list";
     }
-    
-//    @GetMapping("/movies/genre/{genre}")
-//    public String moviesByGenre(@PathVariable String genre, Model model) {
-//        model.addAttribute("movies", movieService.getMoviesByGenre(genre));
-//        model.addAttribute("sectionTitle", genre + " Movies");
-//        return "user/movie-list";
-//    }
 
     @GetMapping("/movies/{id}/shows")
     public String listShows(@PathVariable Long id, Model model) {
@@ -159,25 +137,25 @@ public class UserController {
         return "user/shows";
     }
 
-//    @GetMapping("/shows/{id}/book")
-//    public String bookForm(@PathVariable Long id, Model model, 
-//                          @AuthenticationPrincipal UserDetails userDetails) {
-//        Show show = showService.getShowById(id);
-//        User user = userService.findByEmail(userDetails.getUsername());
-//        
-//        model.addAttribute("show", show);
-//        model.addAttribute("user", user);
-//        return "user/movie-details";
-////        return "user/book";
-//    }
+    @GetMapping("/book")
+    public String bookByParam(@RequestParam("showId") Long showId, Model model,
+                             @AuthenticationPrincipal UserDetails userDetails) {
+        return bookForm(showId, model, userDetails);
+    }
+
+    @GetMapping("/shows/{id}/book")
+    public String bookShowById(@PathVariable Long id, Model model,
+                              @AuthenticationPrincipal UserDetails userDetails) {
+        return bookForm(id, model, userDetails);
+    }
     
     @GetMapping("/movie-details/shows/{id}/book")
     public String bookForm(@PathVariable Long id, Model model, 
                           @AuthenticationPrincipal UserDetails userDetails) {
         Show show = showService.getShowById(id);
-        User user = userService.findByEmail(userDetails.getUsername());
-        Movie movie = show.getMovie();
-        List<String> occupiedSeats = bookingService.getOccupiedSeats(show);
+        User user = userDetails != null ? userService.findByEmail(userDetails.getUsername()) : null;
+        Movie movie = show != null ? show.getMovie() : null;
+        List<String> occupiedSeats = show != null ? bookingService.getOccupiedSeats(show) : Collections.emptyList();
         model.addAttribute("show", show);
         model.addAttribute("movie", movie);
         model.addAttribute("user", user);
@@ -192,11 +170,18 @@ public class UserController {
         Show show = showService.getShowById(id);
         User user = userService.findByEmail(userDetails.getUsername());
         
+        List<String> requestedSeats = Arrays.stream(seatNumbers.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+
+        seatReservationService.bookSeatsDirectly(id, requestedSeats, user.getId());
+
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setShow(show);
         booking.setSeatNumbers(seatNumbers);
-        booking.setTotalAmount(show.getPrice() * seatNumbers.split(",").length);
+        booking.setTotalAmount(show.getPrice() * requestedSeats.size());
         
         bookingService.saveBooking(booking);
         return "redirect:/user/my-bookings";
@@ -238,33 +223,6 @@ public class UserController {
         Movie movie = movieService.getMovieById(id);
         return movie.getBackgroundData();
     }
-    
-    //Ticket PDF Generation
-//    @GetMapping("/booking/download/{id}")
-//    public void downloadTicket(@PathVariable Long id,
-//                               @AuthenticationPrincipal UserDetails userDetails,
-//                               HttpServletResponse response) throws Exception {
-//        Booking booking = bookingService.getBookingById(id);
-//        User user = userService.findByEmail(userDetails.getUsername());
-//        if (booking == null || !booking.getUser().getId().equals(user.getId())) {
-//            response.sendRedirect("/user/my-bookings");
-//            return;
-//        }
-//        response.setContentType("application/pdf");
-//        response.setHeader("Content-Disposition", "attachment; filename=ticket_" + id + ".pdf");
-//
-//        Document doc = new Document();
-//        PdfWriter.getInstance(doc, response.getOutputStream());
-//        doc.open();
-//        doc.add(new Paragraph("🎬 MovieMatic Ticket"));
-//        doc.add(new Paragraph("Movie: " + booking.getShow().getMovie().getTitle()));
-//        doc.add(new Paragraph("Date: " + booking.getShow().getShowDate()));
-//        doc.add(new Paragraph("Time: " + booking.getShow().getShowTime()));
-//        doc.add(new Paragraph("Seats: " + booking.getSeatNumbers()));
-//        doc.add(new Paragraph("Amount: ₹" + booking.getTotalAmount()));
-//        doc.add(new Paragraph("Booked by: " + user.getName()));
-//        doc.close();
-//    }
     
     @GetMapping("/booking/download/{id}")
     public void downloadTicket(@PathVariable Long id,
@@ -309,12 +267,6 @@ public class UserController {
         PdfPCell leftCell = new PdfPCell();
         leftCell.setBorder(Rectangle.NO_BORDER);
         leftCell.setPadding(20);
-
-        // Add logo
-//        Image logo = Image.getInstance(getClass().getResource("/static/images/logo.png"));
-//        logo.scaleToFit(150, 50);
-//        leftCell.addElement(logo);
-//        leftCell.addElement(Chunk.NEWLINE);
 
         // Add title
         leftCell.addElement(new Paragraph("E-TICKET", titleFont));
@@ -370,8 +322,6 @@ public class UserController {
         document.close();
     }
     
-    
-    
     @GetMapping("/booking/cancel/{id}")
     public String cancelBooking(@PathVariable Long id,
         @AuthenticationPrincipal UserDetails userDetails) {
@@ -384,8 +334,7 @@ public class UserController {
         return "redirect:/user/my-bookings";
     }
     
-    
-    //User profile crud
+    // User profile crud
     @GetMapping("/profile")
     public String profile(Model model,
         @AuthenticationPrincipal UserDetails userDetails) {
@@ -393,23 +342,6 @@ public class UserController {
       model.addAttribute("user", u);
       return "user/profile";
     }
-
-//    @PostMapping("/profile/update")
-//    public String updateProfile(@ModelAttribute User userForm,
-//                                @AuthenticationPrincipal UserDetails userDetails) {
-//      User u = userService.findByEmail(userDetails.getUsername());
-//      u.setName(userForm.getName());
-//      u.setPhone(userForm.getPhone());
-//      userService.saveUser(u);
-//      return "redirect:/user/profile?success";
-//    }
-
-//    @GetMapping("/profile")
-//    public String showProfile(Model model, Principal principal) {
-//        User user = userService.findByEmail(principal.getName());
-//        model.addAttribute("user", user);
-//        return "user-profile";
-//    }
 
     @PostMapping("/profile/update")
     public String updateUserProfile(@ModelAttribute User updatedUser,
@@ -429,19 +361,6 @@ public class UserController {
         return ResponseEntity.notFound().build();
     }
 
-//    @GetMapping("/my-bookings")
-//    public String showBookings(Model model, Principal principal) {
-//        User user = userService.findByEmail(principal.getName());
-//        model.addAttribute("bookings", bookingService.getUserBookings(user));
-//        return "my-bookings";
-//    }
-
-//    @GetMapping("/bookings/{id}/delete")
-//    public String deleteBooking(@PathVariable Long id, Principal principal) {
-//        bookingService.deleteBooking(id);
-//        return "redirect:/user/my-bookings";
-//    }
-
     @GetMapping("/bookings/{id}/download")
     public void downloadTicket(@PathVariable Long id, HttpServletResponse response) {
         bookingService.generatePdfTicket(id, response);
@@ -452,51 +371,133 @@ public class UserController {
         Booking bookings = bookingService.getBookingById(booking.getId());
         return "redirect:/user/my-bookings";
     }
-    
-    
-    @PostMapping("/bookings")
-    @Transactional
-    public ResponseEntity<String> createBooking(@RequestBody Map<String, Object> bookingData,
-                                                @AuthenticationPrincipal UserDetails userDetails) {
+
+    /**
+     * POST /user/shows/{showId}/hold
+     * Request Body: { "seatNumbers": "A1,A2" }
+     * Responses:
+     *   - 200 OK with { "status": "HELD", "expiresInSeconds": 600 }
+     *   - 409 Conflict with { "message": "Seats already held or booked" }
+     */
+    @PostMapping("/shows/{showId}/hold")
+    @ResponseBody
+    public ResponseEntity<?> holdSeats(@PathVariable Long showId,
+                                       @RequestBody SeatHoldRequest request,
+                                       @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            User currentUser = userService.findByEmail(userDetails.getUsername());
-            Long showId = Long.valueOf(bookingData.get("showId").toString());
-            Show show = showService.getShowById(showId);
-            String seatNumbers = (String) bookingData.get("seatNumbers");
+            Long userId = null;
+            if (userDetails != null) {
+                User user = userService.findByEmail(userDetails.getUsername());
+                if (user != null) {
+                    userId = user.getId();
+                }
+            } else if (request.getUserId() != null) {
+                userId = request.getUserId();
+            }
 
-            String[] requestedSeats = seatNumbers.split(",");
-            double totalAmount = show.getPrice() * requestedSeats.length;
+            List<String> seatNumbers = request.getSeatNumberList();
+            if (seatNumbers.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Seat numbers must not be empty"));
+            }
 
-            Booking booking = new Booking();
-            booking.setUser(currentUser);
-            booking.setShow(show);
-            booking.setSeatNumbers(seatNumbers);
-            booking.setTotalAmount(totalAmount);
-            booking.setBookingTime(LocalDateTime.now());
-
-            bookingService.saveBooking(booking);
-
-            // Send email with PDF attachment
-            emailService.sendBookingConfirmationEmail(booking.getId(), currentUser.getEmail());
-
-            return ResponseEntity.ok("Booking successful! Confirmation email sent to " + currentUser.getEmail());
+            SeatHoldResponse response = seatReservationService.holdSeats(showId, seatNumbers, userId);
+            return ResponseEntity.ok(response);
+        } catch (SeatUnavailableException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Seats already held or booked"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Booking failed: " + e.getMessage());
+                    .body(Map.of("message", "Failed to hold seats: " + e.getMessage()));
         }
     }
-    
-    
+
+    /**
+     * GET /user/shows/{showId}/occupied-seats
+     * Response: 200 OK with lists of booked seats and currently held seats:
+     * {
+     *   "bookedSeats": ["B1", "B2"],
+     *   "heldSeats": ["A1", "A2"]
+     * }
+     */
     @GetMapping("/shows/{showId}/occupied-seats")
     @ResponseBody
-    public ResponseEntity<List<String>> getOccupiedSeats(@PathVariable Long showId) {
+    public ResponseEntity<?> getOccupiedSeats(@PathVariable Long showId) {
         Show show = showService.getShowById(showId);
         if (show == null) {
             return ResponseEntity.notFound().build();
         }
 
-        List<String> occupiedSeats = bookingService.getOccupiedSeats(show); // should return e.g., ["A1", "B2"]
-        return ResponseEntity.ok(occupiedSeats);
+        OccupiedSeatsResponse response = seatReservationService.getOccupiedSeats(showId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/bookings")
+    @Transactional
+    public ResponseEntity<?> createBooking(@RequestBody Map<String, Object> bookingData,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            User currentUser = null;
+            if (userDetails != null) {
+                currentUser = userService.findByEmail(userDetails.getUsername());
+            }
+
+            Long showId = Long.valueOf(bookingData.get("showId").toString());
+            Show show = showService.getShowById(showId);
+            if (show == null) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Show not found"));
+            }
+
+            String seatNumbers = (String) bookingData.get("seatNumbers");
+            if (seatNumbers == null || seatNumbers.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Seat numbers must not be empty"));
+            }
+
+            List<String> requestedSeats = Arrays.stream(seatNumbers.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            Long userId = currentUser != null ? currentUser.getId() :
+                    (bookingData.containsKey("userId") ? Long.valueOf(bookingData.get("userId").toString()) : null);
+
+            // Enforce Single Owner and Timeout rules
+            seatReservationService.confirmBooking(showId, requestedSeats, userId);
+
+            double totalAmount = show.getPrice() * requestedSeats.size();
+
+            Booking booking = new Booking();
+            booking.setUser(currentUser);
+            booking.setShow(show);
+            booking.setSeatNumbers(String.join(",", requestedSeats));
+            booking.setTotalAmount(totalAmount);
+            booking.setBookingTime(LocalDateTime.now());
+
+            bookingService.saveBooking(booking);
+
+            if (currentUser != null && currentUser.getEmail() != null) {
+                try {
+                    // Send email with PDF attachment
+                    emailService.sendBookingConfirmationEmail(booking.getId(), currentUser.getEmail());
+                } catch (Exception ex) {
+                    // Log email error without failing transaction
+                }
+            }
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Booking successful! Confirmation email sent to " + (currentUser != null ? currentUser.getEmail() : "user"),
+                    "bookingId", booking.getId(),
+                    "status", "BOOKED"
+            ));
+        } catch (SeatUnavailableException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Booking failed: " + e.getMessage()));
+        }
     }
     
     @GetMapping("/all-movies")
@@ -519,6 +520,5 @@ public class UserController {
     	model.addAttribute("user", user);
     	return "user/contact";
     }
-    
     
 }
