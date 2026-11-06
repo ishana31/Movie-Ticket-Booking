@@ -1,0 +1,166 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic Ticket Booking Application API
+  description: API specifications for MovieMatic including Self-Service Ticket Cancellation and Tiered Refund Policy (KAN-10).
+  version: 1.0.0
+paths:
+  /user/bookings/{bookingId}/cancellation-preview:
+    get:
+      summary: Preview ticket cancellation and tiered refund calculation
+      description: Returns preview details including total paid, refund percentage, refund amount, and cancellation fee based on the show timing.
+      operationId: getCancellationPreview
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: Unique ID of the booking to preview cancellation for
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Cancellation preview details calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationPreviewResponse'
+        '400':
+          description: Booking is already cancelled or show starts in less than 1 hour / has passed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Unauthorized / Forbidden - booking belongs to a different user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Booking does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/bookings/{bookingId}/cancel:
+    post:
+      summary: Cancel a booked movie ticket and process tiered refund
+      description: Cancels the booking, marks status as CANCELLED, calculates refund and fee, sets cancellation timestamp, and automatically releases all booked seats.
+      operationId: cancelBooking
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          description: Unique ID of the booking to cancel
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Booking cancelled successfully with refund details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingDetailsResponse'
+        '400':
+          description: Show starts in less than 1 hour or has already started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Unauthorized / Forbidden - user does not own this booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - booking is already cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Get currently occupied seats for a show
+      description: Returns list of occupied seat codes. Automatically excludes seats from cancelled bookings.
+      operationId: getOccupiedSeats
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of occupied seat identifiers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+components:
+  schemas:
+    CancellationPreviewResponse:
+      type: object
+      properties:
+        totalPaid:
+          type: number
+          format: double
+          example: 200.00
+        refundPercentage:
+          type: integer
+          example: 90
+        refundAmount:
+          type: number
+          format: double
+          example: 180.00
+        cancellationFee:
+          type: number
+          format: double
+          example: 20.00
+
+    BookingDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 101
+        seatNumbers:
+          type: string
+          example: "A1,A2"
+        totalAmount:
+          type: number
+          format: double
+          example: 200.00
+        status:
+          type: string
+          example: "CANCELLED"
+        cancelledAt:
+          type: string
+          format: date-time
+          example: "2025-05-10T14:30:00"
+        refundAmount:
+          type: number
+          format: double
+          example: 180.00
+        cancellationFee:
+          type: number
+          format: double
+          example: 20.00
+        refundStatus:
+          type: string
+          example: "REFUNDED"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Show starts in less than 1 hour or has already started"

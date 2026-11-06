@@ -28,15 +28,11 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: var(--light);
-      /* background: linear-gradient(rgba(10, 10, 42, 0.95), rgba(10, 10, 42, 0.9)), 
-                  url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover fixed; */
       color: white;
       padding-top: var(--header-height);
       min-height: 100vh;
     }
 
-    
-    /* Navbar */
     /* Navbar */
     .navbar {
       background-color: rgba(10, 10, 42, 0.9);
@@ -173,6 +169,11 @@
       display: flex;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .booking-card.cancelled-card {
+      opacity: 0.85;
+      border-left: 4px solid #dc3545;
     }
     
     .booking-card:hover {
@@ -423,122 +424,88 @@
       font-size: 0.9rem;
     }
     
-    /* Logout Modal Styles */
-.custom-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(5px);
-}
-
-.modal-content {
-    background: rgba(10, 10, 42, 0.95);
-    padding: 2rem;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid rgba(255, 204, 0, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    text-align: center;
-}
-
-.modal-content h5 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.modal-content p {
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 1.5rem;
-}
-
-.modal-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.modal-buttons .btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s;
-}
-
-.modal-buttons .btn-outline-secondary {
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.modal-buttons .btn-outline-secondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: white;
-}
-
-.modal-buttons .btn-primary {
-    background: linear-gradient(45deg, var(--primary), #ff6b3d);
-    border: none;
-}
-
-.modal-buttons .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
-}
-
-/* Search Bar Styles */
-.search-bar {
-    position: relative;
-    max-width: 300px;
-}
-
-.search-bar .form-control {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    border-radius: 50px;
-    padding-left: 40px;
-    transition: all 0.3s;
-}
-
-.search-bar .form-control:focus {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: var(--secondary);
-    box-shadow: 0 0 0 0.25rem rgba(255, 204, 0, 0.25);
-}
-
-.search-bar .input-group-text {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    pointer-events: none;
-}
-
-@media (max-width: 768px) {
-    .search-bar {
+    /* Custom Modal Styles */
+    .custom-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        max-width: none;
-        margin-bottom: 15px;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
     }
-}
-    
+
+    .modal-content {
+        background: rgba(10, 10, 42, 0.95);
+        padding: 2rem;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 450px;
+        border: 1px solid rgba(255, 204, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        text-align: center;
+    }
+
+    .modal-content h5 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .modal-content p {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .modal-buttons .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .modal-buttons .btn-outline-secondary {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-buttons .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: white;
+    }
+
+    .modal-buttons .btn-primary {
+        background: linear-gradient(45deg, var(--primary), #ff6b3d);
+        border: none;
+    }
+
+    .modal-buttons .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
+    }
+
+    .refund-summary-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 204, 0, 0.2);
+        border-radius: 10px;
+        padding: 15px;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .booking-card {
@@ -571,32 +538,6 @@
       .footer {
         text-align: center;
       }
-      
-      .footer-links {
-        margin-bottom: 30px;
-      }
-      
-      .footer-links h5::after {
-        left: 50%;
-        transform: translateX(-50%);
-      }
-      
-      .social-links {
-        justify-content: center;
-      }
-      
-      .page-title {
-        font-size: 2rem;
-      }
-    }
-    
-    /* Particle animation */
-    .particle {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: -1;
     }
   </style>
 </head>
@@ -631,7 +572,6 @@
 					    <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Search movies...">
 					</div>
                     <div class="dropdown">
-
                         <a href="#"
 							class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
 							id="userDropdown" data-bs-toggle="dropdown">
@@ -669,8 +609,9 @@
     </div>
 
     <div id="bookingsContainer">
-      <div th:each="booking : ${bookings}" class="booking-card animate__animated animate__fadeIn" 
-           th:id="'booking-' + ${booking.id}" style="animation-delay: '${bookingStat.index * 0.1}'">
+      <div th:each="booking : ${bookings}" 
+           th:class="'booking-card animate__animated animate__fadeIn ' + (${booking.status == 'CANCELLED'} ? 'cancelled-card' : '')" 
+           th:id="'booking-' + ${booking.id}">
         <div class="movie-poster-container">
           <img th:src="@{'/user/movies/image/' + ${booking.show.movie.id}}"
             class="movie-poster" th:alt="${booking.show.movie.title}"
@@ -682,6 +623,16 @@
           <div class="text-muted mb-2">
             <small>Booked on <span th:text="${#temporals.format(booking.bookingTime, 'dd MMM yyyy hh:mm a')}"></span></small>
             <span class="confirmation-number ms-2" th:text="'Booking ID #' + ${booking.id}"></span>
+            <!-- Status Badges -->
+            <span th:if="${booking.status == 'CANCELLED'}" class="badge bg-danger ms-2 status-badge">CANCELLED</span>
+            <span th:if="${booking.status != 'CANCELLED'}" class="badge bg-success ms-2 status-badge">CONFIRMED</span>
+          </div>
+
+          <div th:if="${booking.status == 'CANCELLED'}" class="text-danger mb-2 small">
+            <i class="bi bi-x-circle-fill"></i> Cancelled on <span th:text="${booking.cancelledAt != null ? #temporals.format(booking.cancelledAt, 'dd MMM yyyy hh:mm a') : 'N/A'}"></span>
+            <span th:if="${booking.refundAmount != null}" class="text-success ms-2">
+              (Refund: ₹<span th:text="${#numbers.formatDecimal(booking.refundAmount, 1, 2)}"></span> | Fee: ₹<span th:text="${#numbers.formatDecimal(booking.cancellationFee, 1, 2)}"></span>)
+            </span>
           </div>
 
           <div class="meta-grid">
@@ -714,16 +665,25 @@
 
         <div class="booking-actions">
           <!-- Download Button -->
-		<a th:href="@{'/user/booking/download/' + ${booking.id}}" 
-		   class="btn btn-outline-primary download-btn">
-		    <i class="bi bi-download"></i> Download
-		</a>
-		
-		<!-- Cancel Button -->
-		<button class="btn btn-outline-danger cancel-btn" 
-		        th:attr="data-booking-id=${booking.id}">
-		    <i class="bi bi-x-circle"></i> Cancel
-		</button>
+          <a th:if="${booking.status != 'CANCELLED'}" th:href="@{'/user/booking/download/' + ${booking.id}}" 
+             class="btn btn-outline-primary download-btn">
+              <i class="bi bi-download"></i> Download
+          </a>
+          
+          <!-- Cancel Ticket Button -->
+          <button th:if="${booking.status != 'CANCELLED'}" 
+                  class="btn btn-outline-danger cancel-btn" 
+                  th:attr="data-booking-id=${booking.id}">
+              <i class="bi bi-x-circle"></i> Cancel Ticket
+          </button>
+
+          <!-- Cancelled Badge in Actions -->
+          <div th:if="${booking.status == 'CANCELLED'}" class="text-center">
+              <span class="badge bg-danger p-2 mb-1"><i class="bi bi-x-octagon"></i> CANCELLED</span>
+              <div th:if="${booking.refundAmount != null}">
+                  <small class="text-white d-block">Refund: ₹<span th:text="${#numbers.formatDecimal(booking.refundAmount, 1, 2)}"></span></small>
+              </div>
+          </div>
         </div>
       </div>
     </div>
@@ -738,45 +698,10 @@
 						class="bi bi-film"></i>Namma Tickets
 		  </a>
           <p>Book your movie tickets online and enjoy the latest blockbusters in theaters near you.</p>
-          <div class="social-links">
-            <a href="#"><i class="bi bi-facebook"></i></a>
-            <a href="#"><i class="bi bi-twitter"></i></a>
-            <a href="#"><i class="bi bi-instagram"></i></a>
-            <a href="#"><i class="bi bi-youtube"></i></a>
-          </div>
         </div>
-        <div class="col-md-2">
-          <div class="footer-links">
-            <h5>Company</h5>
-            <ul>
-              <li><a href="#">About Us</a></li>
-              <li><a href="#">Careers</a></li>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms & Conditions</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md-2">
-          <div class="footer-links">
-            <h5>Help</h5>
-            <ul>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">Booking Guide</a></li>
-              <li><a href="#">Cancellation Policy</a></li>
-              <li><a href="#">Refund Policy</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="footer-links">
-            <h5>Newsletter</h5>
-            <p>Subscribe to our newsletter for the latest movie updates and offers.</p>
-            <div class="input-group mb-3">
-              <input type="email" class="form-control" placeholder="Your Email">
-              <button class="btn btn-primary" type="button">Subscribe</button>
-            </div>
-          </div>
+        <div class="col-md-4 offset-md-4 text-md-end">
+          <h5>Cancellation Policy</h5>
+          <p class="small text-white-50">&gt; 4 hrs before show: 90% refund<br>1-4 hrs before show: 50% refund<br>&lt; 1 hr before show: No refund</p>
         </div>
       </div>
       <div class="copyright">&copy; All Rights Reserved.</div>
@@ -796,15 +721,49 @@
 	    </div>
 	</div>
 	
-	<!-- Cancel Confirmation Modal -->
+	<!-- Cancel Confirmation Modal with Tiered Refund Breakdown -->
 	<div id="cancelModal" class="custom-modal">
 	    <div class="modal-content text-center">
-	        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
-	        <h5 class="mt-3">Cancel Booking</h5>
-	        <p>Are you sure you want to cancel this booking? This action cannot be undone.</p>
+	        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+	        <h5 class="mt-3">Cancel Ticket</h5>
+	        
+	        <!-- Spinner during preview fetch -->
+	        <div id="cancelModalSpinner" class="my-3">
+	            <div class="spinner-border text-primary" role="status"></div>
+	            <p class="mt-2 text-white-50">Calculating refund breakdown...</p>
+	        </div>
+
+	        <!-- Refund Breakdown Body -->
+	        <div id="cancelModalBreakdown" class="refund-summary-box text-start my-3" style="display: none;">
+	            <div class="d-flex justify-content-between mb-2">
+	                <span class="text-white-50">Total Paid:</span>
+	                <span class="text-white fw-bold" id="previewTotalPaid">₹0.00</span>
+	            </div>
+	            <div class="d-flex justify-content-between mb-2">
+	                <span class="text-white-50">Refund Percentage:</span>
+	                <span class="text-info fw-bold" id="previewRefundPercent">0%</span>
+	            </div>
+	            <div class="d-flex justify-content-between mb-2">
+	                <span class="text-white-50">Cancellation Fee:</span>
+	                <span class="text-warning fw-bold" id="previewCancellationFee">₹0.00</span>
+	            </div>
+	            <hr class="border-secondary my-2">
+	            <div class="d-flex justify-content-between">
+	                <span class="text-white">Refund Amount:</span>
+	                <span class="text-success fw-bold fs-5" id="previewRefundAmount">₹0.00</span>
+	            </div>
+	        </div>
+
+	        <!-- Error Display -->
+	        <div id="cancelModalError" class="alert alert-danger my-3" style="display: none;"></div>
+
+	        <p id="cancelModalWarning" class="text-white-50 small mb-3" style="display: none;">
+	            Are you sure you want to cancel? Seats will be immediately released and the refund will be credited.
+	        </p>
+
 	        <div class="modal-buttons justify-content-center">
-	            <button id="cancelNo" class="btn btn-outline-secondary">No</button>
-	            <button id="cancelYes" class="btn btn-danger">Yes, Cancel</button>
+	            <button id="cancelNo" class="btn btn-outline-secondary">Keep Ticket</button>
+	            <button id="cancelYes" class="btn btn-danger" style="display: none;">Yes, Cancel Ticket</button>
 	        </div>
 	    </div>
 	</div>
@@ -826,7 +785,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-	//Logout Modal Functionality
 	  document.addEventListener('DOMContentLoaded', function() {
 	    // Highlight current page in navbar
 	    $('.nav-link').each(function() {
@@ -835,7 +793,6 @@
 	        }
 	    });
 	    
-	    // Initialize modal elements
 	    const modals = {
 	        download: document.getElementById('downloadModal'),
 	        cancel: document.getElementById('cancelModal'),
@@ -847,27 +804,57 @@
 	    
 	    // Event delegation for dynamic buttons
 	    document.addEventListener('click', function(e) {
-	        // Download button handler
 	        if (e.target.closest('.download-btn')) {
 	            e.preventDefault();
 	            downloadUrl = e.target.closest('.download-btn').getAttribute('href');
 	            showModal('download');
 	        }
 	        
-	        // Cancel button handler
 	        if (e.target.closest('.cancel-btn')) {
 	            currentBookingId = e.target.closest('.cancel-btn').getAttribute('data-booking-id');
-	            showModal('cancel');
+	            loadCancellationPreview(currentBookingId);
 	        }
 	        
-	        // Logout button handler
 	        if (e.target.closest('#logoutBtn')) {
 	            e.preventDefault();
 	            showModal('logout');
 	        }
 	    });
 	    
-	    // Modal button handlers
+	    function loadCancellationPreview(bookingId) {
+	        showModal('cancel');
+	        document.getElementById('cancelModalSpinner').style.display = 'block';
+	        document.getElementById('cancelModalBreakdown').style.display = 'none';
+	        document.getElementById('cancelModalError').style.display = 'none';
+	        document.getElementById('cancelModalWarning').style.display = 'none';
+	        document.getElementById('cancelYes').style.display = 'none';
+
+	        fetch(`/user/bookings/${bookingId}/cancellation-preview`)
+	            .then(async response => {
+	                const data = await response.json();
+	                if (!response.ok) {
+	                    throw new Error(data.message || 'Unable to preview cancellation');
+	                }
+	                return data;
+	            })
+	            .then(data => {
+	                document.getElementById('cancelModalSpinner').style.display = 'none';
+	                document.getElementById('previewTotalPaid').textContent = `₹${Number(data.totalPaid).toFixed(2)}`;
+	                document.getElementById('previewRefundPercent').textContent = `${data.refundPercentage}%`;
+	                document.getElementById('previewCancellationFee').textContent = `₹${Number(data.cancellationFee).toFixed(2)}`;
+	                document.getElementById('previewRefundAmount').textContent = `₹${Number(data.refundAmount).toFixed(2)}`;
+	                document.getElementById('cancelModalBreakdown').style.display = 'block';
+	                document.getElementById('cancelModalWarning').style.display = 'block';
+	                document.getElementById('cancelYes').style.display = 'inline-block';
+	            })
+	            .catch(err => {
+	                document.getElementById('cancelModalSpinner').style.display = 'none';
+	                const errorBox = document.getElementById('cancelModalError');
+	                errorBox.textContent = err.message;
+	                errorBox.style.display = 'block';
+	            });
+	    }
+
 	    document.getElementById('downloadCancel').addEventListener('click', () => hideModal('download'));
 	    document.getElementById('downloadConfirm').addEventListener('click', handleDownload);
 	    document.getElementById('cancelNo').addEventListener('click', () => hideModal('cancel'));
@@ -875,14 +862,12 @@
 	    document.getElementById('logoutNo').addEventListener('click', () => hideModal('logout'));
 	    document.getElementById('logoutYes').addEventListener('click', () => window.location.href = '/logout');
 	    
-	    // Close modals when clicking outside
 	    Object.values(modals).forEach(modal => {
 	        modal.addEventListener('click', function(e) {
 	            if (e.target === modal) hideModal(modal.id.replace('Modal', ''));
 	        });
 	    });
 	    
-	    // Close modals with ESC key
 	    document.addEventListener('keydown', function(e) {
 	        if (e.key === 'Escape') {
 	            Object.keys(modals).forEach(key => {
@@ -891,7 +876,6 @@
 	        }
 	    });
 	    
-	    // Modal control functions
 	    function showModal(modalName) {
 	        modals[modalName].style.display = 'flex';
 	        document.body.style.overflow = 'hidden';
@@ -902,7 +886,6 @@
 	        document.body.style.overflow = 'auto';
 	    }
 	    
-	    // Action handlers
 	    function handleDownload() {
 	        const btn = document.getElementById('downloadConfirm');
 	        btn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i> Preparing...';
@@ -921,36 +904,34 @@
 	        btn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i> Processing...';
 	        btn.disabled = true;
 	        
-	        // Simulate API call
-	        setTimeout(() => {
-	            const bookingElement = document.getElementById(`booking-${currentBookingId}`);
-	            if (bookingElement) {
-	                bookingElement.style.opacity = '0';
-	                setTimeout(() => {
-	                    bookingElement.remove();
-	                    showNotification('Booking cancelled successfully!', 'success');
-	                    
-	                    // Show empty state if no bookings left
-	                    if (document.querySelectorAll('.booking-card').length === 0) {
-	                        document.querySelector('#bookingsContainer').innerHTML = `
-	                            <div class="no-bookings animate__animated animate__fadeIn">
-	                                <i class="bi bi-calendar-x"></i>
-	                                <p class="mt-3">You have no bookings yet.</p>
-	                                <a href="/user/movies" class="btn btn-primary mt-3">
-	                                    <i class="bi bi-film"></i> Browse Movies
-	                                </a>
-	                            </div>
-	                        `;
-	                    }
-	                }, 300);
+	        fetch(`/user/bookings/${currentBookingId}/cancel`, {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json'
 	            }
+	        })
+	        .then(async res => {
+	            const data = await res.json();
+	            if (!res.ok) {
+	                throw new Error(data.message || 'Failed to cancel booking');
+	            }
+	            return data;
+	        })
+	        .then(data => {
 	            hideModal('cancel');
-	            btn.innerHTML = 'Yes, Cancel';
+	            showNotification(`Booking #${currentBookingId} cancelled successfully! Refund: ₹${Number(data.refundAmount).toFixed(2)}`, 'success');
+	            setTimeout(() => {
+	                window.location.reload();
+	            }, 1200);
+	        })
+	        .catch(err => {
+	            hideModal('cancel');
+	            showNotification(err.message, 'error');
+	            btn.innerHTML = 'Yes, Cancel Ticket';
 	            btn.disabled = false;
-	        }, 2000);
+	        });
 	    }
 	    
-	    // Notification system
 	    function showNotification(message, type = 'success') {
 	        const icon = type === 'success' 
 	            ? 'bi-check-circle-fill text-success' 
@@ -970,10 +951,9 @@
 	            notification.classList.remove('animate__fadeInUp');
 	            notification.classList.add('animate__fadeOutDown');
 	            setTimeout(() => notification.remove(), 500);
-	        }, 3000);
+	        }, 3500);
 	    }
 	    
-	    // Add animation styles
 	    const style = document.createElement('style');
 	    style.innerHTML = `
 	        @keyframes spin {
@@ -993,7 +973,7 @@
 	            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 	            border-left: 4px solid;
 	            z-index: 10000;
-	            max-width: 350px;
+	            max-width: 380px;
 	        }
 	        .notification.success {
 	            border-color: #28a745;
@@ -1004,65 +984,6 @@
 	    `;
 	    document.head.appendChild(style);
 	});
-  </script>
-  <script>
-//Search Functionality
-  $(document).ready(function() {
-      // Initialize search functionality
-      $('#searchInput').on('input', function() {
-          const searchTerm = $(this).val().toLowerCase();
-          
-          if (searchTerm.length === 0) {
-              $('.booking-card').show();
-              return;
-          }
-          
-          $('.booking-card').each(function() {
-              const cardText = $(this).text().toLowerCase();
-              if (cardText.includes(searchTerm)) {
-                  $(this).show();
-              } else {
-                  $(this).hide();
-              }
-          });
-          
-          // Show empty state if no results found
-          const visibleCards = $('.booking-card:visible').length;
-          if (visibleCards === 0) {
-              $('#bookingsContainer').append(`
-                  <div class="no-results text-center py-5 animate__animated animate__fadeIn">
-                      <i class="bi bi-search" style="font-size: 3rem; color: var(--secondary);"></i>
-                      <p class="mt-3">No bookings found matching your search.</p>
-                      <button class="btn btn-outline-secondary mt-2 clear-search">Clear Search</button>
-                  </div>
-              `);
-          } else {
-              $('.no-results').remove();
-          }
-      });
-      
-      // Clear search button handler (event delegation for dynamically added button)
-      $(document).on('click', '.clear-search', function() {
-          $('#searchInput').val('').trigger('input');
-      });
-      
-      // Add styles for no-results message
-      const style = document.createElement('style');
-      style.innerHTML = `
-          .no-results {
-              color: rgba(255, 255, 255, 0.7);
-              background: rgba(255, 255, 255, 0.05);
-              border-radius: 15px;
-              backdrop-filter: blur(5px);
-              border: 1px solid rgba(255, 255, 255, 0.1);
-              margin-top: 20px;
-          }
-          .no-results i {
-              color: var(--secondary);
-          }
-      `;
-      document.head.appendChild(style);
-  });
   </script>
 </body>
 </html>

@@ -2,6 +2,8 @@ package com.MovieMatic.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +26,7 @@ public class User {
 	@Column(unique = true)
 	private String email;
 
+	@JsonIgnore
 	private String password;
 
 	private String role; // "USER" or "ADMIN"
@@ -38,6 +41,7 @@ public class User {
 
 	private boolean active = true;
 	
+	@JsonIgnore
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
 	private byte[] profileImage;

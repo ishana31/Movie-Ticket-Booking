@@ -509,6 +509,8 @@ body {
                         <div class="text-muted-bookings mb-2">
                             <small>Booked on <span th:text="${#temporals.format(booking.bookingTime, 'dd MMM yyyy hh:mm a')}"></span></small>
                             <span class="confirmation-number ms-2" th:text="'Booking ID #' + ${booking.id}"></span>
+                            <span th:if="${booking.status == 'CANCELLED'}" class="badge-pill bg-danger text-white ms-2">CANCELLED</span>
+                            <span th:if="${booking.status != 'CANCELLED'}" class="badge-pill bg-success text-white ms-2">CONFIRMED</span>
                             <span th:classappend="${booking.user.role == 'ADMIN'} ? 'badge-pill badge-admin' : 'badge-pill badge-user'"
                                   th:text="${booking.user.role}" class="ms-2"></span>
                         </div>
