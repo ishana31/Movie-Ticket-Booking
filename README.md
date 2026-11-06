@@ -10,6 +10,11 @@
 - Movie and Show management (CRUD) for Admin
 - Dynamic Admin Dashboard with revenue, booking stats
 - User dashboard with carousels and movie discovery
+- **Concurrency-Safe Seat Reservation System with Temporary Hold & Auto-Release (TTL)**:
+  - 10-minute temporary seat hold with live countdown timer
+  - 3 distinct seat states: Available (Green), Held (Orange), Booked (Red)
+  - Concurrency safety with atomic reservation and single-owner verification
+  - Automatic background release scheduler every 60 seconds
 - Interactive seat selection and Razorpay integration
 - Email ticket confirmation and PDF download
 - Responsive UI with Bootstrap
@@ -19,12 +24,28 @@
 
 ## 🛠️ Technologies Used
 
-- **Backend:** Spring Boot, Java, Spring Security
-- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5
-- **Database:** MySQL/PostgreSQL
-- **Email & PDF:** JavaMailSender, iText/Apache PDFBox, ZXing for QR Code
+- **Backend:** Spring Boot, Java, Spring Security, Spring Task Scheduling
+- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5, jQuery
+- **Database:** PostgreSQL / MySQL
+- **Email & PDF:** JavaMailSender, OpenPDF / iText, ZXing for QR Code
 - **Payment:** Razorpay integration
-- **Security:** Role-based login, OTP password reset
+- **Security:** Role-based login, BCrypt password hashing, OTP reset
+
+---
+
+## 🎟️ Seat Reservation & Temporary Hold (KAN-11)
+
+### Features & Workflow
+- **Seat Selection**: Customers select available seats and click "Confirm Booking". Selected seats transition immediately to `HELD` status.
+- **10-Minute Countdown Timer**: Checkout modal displays real-time countdown `10:00 -> 00:00`.
+- **Double-Booking Prevention**: Other customers see held seats rendered in Orange (disabled). If a conflict occurs, an alert warns: *"Selected seat(s) are currently reserved by another customer. Please choose different seats."*
+- **Auto-Release (TTL)**: Holds strictly expire after 10 minutes. A background scheduled task running every 60 seconds automatically releases expired holds back to `AVAILABLE` (Green).
+- **Payment Confirmation**: Upon payment success, seats transition permanently to `BOOKED` (Red).
+
+### Endpoints
+- `POST /user/shows/{showId}/hold`: Request body `{ "seatNumbers": "A1,A2" }`. Returns `200 OK` with `{ "status": "HELD", "expiresInSeconds": 600 }` or `409 Conflict`.
+- `GET /user/shows/{showId}/occupied-seats`: Returns `{ "bookedSeats": [...], "heldSeats": [...] }`.
+- `POST /user/bookings`: Confirms reservation with single-owner verification.
 
 ---
 
@@ -48,10 +69,6 @@ The **Admin** is responsible for managing all data and monitoring platform usage
 - View all bookings, search/filter by user/movie/date
 - View user info and delete bookings if needed
 
-### 🔒 Security
-- Role-based access and secure session management
-- Sidebar navigation for quick access to all sections
-
 ---
 
 ## 🙋‍♂️ User Role: Features and Flow
@@ -68,43 +85,13 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - View detailed movie pages with cast, synopsis, shows
 
 ### 🎫 Booking Flow
-- Interactive seat layout: select, view price, and pay
+- Interactive seat layout with 3 status colors (Green, Orange, Red)
+- 10-minute temporary hold with live countdown timer
 - Razorpay integration for secure transactions
 - Booking summary with selected seats and total amount
 
 ### 📧 Email + PDF Ticket
 - Booking confirmation sent via email
 - PDF ticket available for download anytime
-
-### 👤 Profile Management
-- Update personal details and password
-- “Forgot Password” with OTP email verification
-
-### 📱 Fully Responsive UI
-- Works smoothly across mobile, tablet, and desktop devices
-
----
-
-## 🧾 Summary Table – Admin vs. User
-
-| Feature/Section     | Admin Capabilities                                    | User Capabilities                                      |
-|---------------------|--------------------------------------------------------|--------------------------------------------------------|
-| **Dashboard**       | View stats, recent movies/shows/bookings              | View carousels, top movies, upcoming releases         |
-| **Movie Management**| Add, edit, delete, search movies                      | Browse, search, filter movies                         |
-| **Show Management** | Add, edit, delete shows                               | View shows, book tickets                              |
-| **Booking Management**| View all bookings, delete, view user info          | View, delete own bookings, download PDF               |
-| **Profile Management**| (Optional)                                          | Update profile, change password, OTP reset            |
-| **Payments**        | View revenue stats                                    | Razorpay checkout for booking                         |
-| **Email Integration**| Optional for alerts                                  | Confirmation emails for bookings & reset              |
-| **Security**        | Role-based control, session handling                  | Secure login, OTP reset                               |
-
----
-
-## 🔐 Security Highlights
-
-- JWT or session-based login
-- Passwords encrypted using BCrypt
-- OTP-based password recovery
-- Admin features protected by role-based access control
 
 ---

@@ -72,3 +72,21 @@ body {
     border: none;
     font-weight: 600;
 }
+
+/* Seat Reservation Status Colors */
+.seat-available {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+}
+
+.seat-held {
+    background-color: #fd7e14 !important;
+    color: #ffffff !important;
+    cursor: not-allowed !important;
+}
+
+.seat-booked {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    cursor: not-allowed !important;
+}
