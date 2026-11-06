@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic - Ticket Booking Application API
+  description: API documentation for MovieMatic ticket booking, movie management, and temporary seat hold reservation system.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /user/shows/{showId}/hold:
+    post:
+      summary: Temporarily hold selected seats
+      description: Atomically holds the requested seats for 10 minutes (600 seconds) for the authenticated user.
+      operationId: holdSeats
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatHoldRequest'
+      responses:
+        '200':
+          description: Seats held successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatHoldResponse'
+        '400':
+          description: Invalid request parameters or empty seats
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Seats already held or booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Retrieve occupied and held seats
+      description: Returns distinct lists of currently booked seats and active held seats for a show.
+      operationId: getOccupiedSeats
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Occupied seats fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupiedSeatsResponse'
+        '404':
+          description: Show not found
+
+  /user/bookings:
+    post:
+      summary: Confirm booking and purchase seats
+      description: Enforces Single-Owner rule and TTL validity, permanently transitions seats from HELD to BOOKED.
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                showId:
+                  type: integer
+                  format: int64
+                  example: 1
+                seatNumbers:
+                  type: string
+                  example: "A1,A2"
+                paymentReference:
+                  type: string
+                  example: "pay_xyz123"
+      responses:
+        '200':
+          description: Booking confirmed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookingId:
+                    type: integer
+                    format: int64
+                  message:
+                    type: string
+        '409':
+          description: Seat conflict or hold expired / not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SeatHoldRequest:
+      type: object
+      required:
+        - seatNumbers
+      properties:
+        seatNumbers:
+          type: string
+          example: "A1,A2"
+          description: Comma-separated list of seat labels to reserve
+
+    SeatHoldResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "HELD"
+        expiresInSeconds:
+          type: integer
+          example: 600
+
+    OccupiedSeatsResponse:
+      type: object
+      properties:
+        bookedSeats:
+          type: array
+          items:
+            type: string
+          example: ["B1", "B2"]
+        heldSeats:
+          type: array
+          items:
+            type: string
+          example: ["A1", "A2"]
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seats already held or booked"
