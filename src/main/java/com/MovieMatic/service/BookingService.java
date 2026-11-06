@@ -2,6 +2,10 @@ package com.MovieMatic.service;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +14,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.MovieMatic.dto.CancellationPreviewResponse;
 import com.MovieMatic.model.Booking;
 import com.MovieMatic.model.Show;
 import com.MovieMatic.model.User;
@@ -46,30 +51,26 @@ public class BookingService {
         return bookingRepository.findByUser(user);
     }
 
-    
-    
     public List<String> getOccupiedSeats(Show show) {
         List<Booking> bookings = bookingRepository.findByShow(show);
 
         List<String> occupied = new ArrayList<>();
         for (Booking booking : bookings) {
-            String[] seats = booking.getSeatNumbers().split(","); // e.g., "A1,B2"
-            occupied.addAll(Arrays.asList(seats));
+            if ("CANCELLED".equalsIgnoreCase(booking.getStatus())) {
+                continue;
+            }
+            if (booking.getSeatNumbers() != null && !booking.getSeatNumbers().trim().isEmpty()) {
+                String[] seats = booking.getSeatNumbers().split(",");
+                for (String seat : seats) {
+                    String trimmed = seat.trim();
+                    if (!trimmed.isEmpty()) {
+                        occupied.add(trimmed);
+                    }
+                }
+            }
         }
         return occupied;
     }
-    
-    
-//    public List<String> getOccupiedSeats(Show show) {
-//        List<Booking> bookings = bookingRepository.findByShow(show);
-//        List<String> occupied = new ArrayList<>();
-//
-//        for (Booking b : bookings) {
-//            String[] seats = b.getSeatNumbers().split(",");
-//            occupied.addAll(Arrays.asList(seats));
-//        }
-//        return occupied;
-//    }
 
     public long getTotalBookingsCount() {
         return bookingRepository.count();
@@ -87,13 +88,100 @@ public class BookingService {
     public void deleteByShowId(Long showId) {
         bookingRepository.deleteByShowId(showId);
     }
-    
 
-//    public void deleteBooking(Long id) {
-//        bookingRepository.deleteById(id);
-//    }	
-//    
-   
+    public void deleteBooking(Long id) {
+        bookingRepository.deleteById(id);
+    }
+
+    /**
+     * Preview cancellation refund details for a given booking.
+     * 
+     * Policy:
+     * - More than 4 hours before show start: 90% refund (10% fee)
+     * - Between 1 and 4 hours before show start: 50% refund (50% fee)
+     * - Less than 1 hour or already passed: Ineligible (throws IllegalArgumentException)
+     */
+    public CancellationPreviewResponse getCancellationPreview(Booking booking, LocalDateTime requestTime) {
+        if (booking == null) {
+            throw new IllegalArgumentException("Booking cannot be null");
+        }
+        if ("CANCELLED".equalsIgnoreCase(booking.getStatus())) {
+            throw new IllegalStateException("Booking is already cancelled");
+        }
+        Show show = booking.getShow();
+        if (show == null || show.getShowDate() == null || show.getShowTime() == null) {
+            throw new IllegalStateException("Show information is incomplete for booking");
+        }
+
+        if (requestTime == null) {
+            requestTime = LocalDateTime.now();
+        }
+
+        LocalDateTime showStartTime = LocalDateTime.of(show.getShowDate(), show.getShowTime());
+        if (!showStartTime.isAfter(requestTime)) {
+            throw new IllegalArgumentException("Show has already started or passed");
+        }
+
+        long secondsUntilShow = Duration.between(requestTime, showStartTime).getSeconds();
+        if (secondsUntilShow < 3600) {
+            throw new IllegalArgumentException("Cancellations are not permitted within 1 hour of show start");
+        }
+
+        int refundPercentage = secondsUntilShow > 14400 ? 90 : 50;
+        double totalPaid = booking.getTotalAmount();
+        BigDecimal total = BigDecimal.valueOf(totalPaid).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal refundPct = BigDecimal.valueOf(refundPercentage);
+        BigDecimal refundAmount = total.multiply(refundPct).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        BigDecimal cancellationFee = total.subtract(refundAmount);
+
+        return new CancellationPreviewResponse(totalPaid, refundPercentage, refundAmount.doubleValue(), cancellationFee.doubleValue());
+    }
+
+    /**
+     * Cancel a booking, update status to CANCELLED, set refund details and timestamp,
+     * releasing seats automatically.
+     */
+    public Booking cancelBooking(Booking booking, LocalDateTime cancellationTime) {
+        if (booking == null) {
+            throw new IllegalArgumentException("Booking cannot be null");
+        }
+        if ("CANCELLED".equalsIgnoreCase(booking.getStatus())) {
+            throw new IllegalStateException("Booking is already cancelled");
+        }
+        Show show = booking.getShow();
+        if (show == null || show.getShowDate() == null || show.getShowTime() == null) {
+            throw new IllegalStateException("Show information is incomplete for booking");
+        }
+
+        if (cancellationTime == null) {
+            cancellationTime = LocalDateTime.now();
+        }
+
+        LocalDateTime showStartTime = LocalDateTime.of(show.getShowDate(), show.getShowTime());
+        if (!showStartTime.isAfter(cancellationTime)) {
+            throw new IllegalArgumentException("Show has already started or passed");
+        }
+
+        long secondsUntilShow = Duration.between(cancellationTime, showStartTime).getSeconds();
+        if (secondsUntilShow < 3600) {
+            throw new IllegalArgumentException("Cancellations are not permitted within 1 hour of show start");
+        }
+
+        int refundPercentage = secondsUntilShow > 14400 ? 90 : 50;
+        double totalPaid = booking.getTotalAmount();
+        BigDecimal total = BigDecimal.valueOf(totalPaid).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal refundPct = BigDecimal.valueOf(refundPercentage);
+        BigDecimal refundAmount = total.multiply(refundPct).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        BigDecimal cancellationFee = total.subtract(refundAmount);
+
+        booking.setStatus("CANCELLED");
+        booking.setCancelledAt(cancellationTime);
+        booking.setRefundAmount(refundAmount.doubleValue());
+        booking.setCancellationFee(cancellationFee.doubleValue());
+        booking.setRefundStatus("REFUNDED");
+
+        return bookingRepository.save(booking);
+    }
 
     public void generatePdfTicket(Long bookingId, HttpServletResponse response) {
         try {
@@ -119,7 +207,6 @@ public class BookingService {
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Color.BLACK);
             Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.BLACK);
 
-
             // Title
             Paragraph title = new Paragraph("🎬 Movie Ticket", titleFont);
             title.setAlignment(Paragraph.ALIGN_CENTER);
@@ -133,10 +220,6 @@ public class BookingService {
             table.setSpacingBefore(10f); // Space before table
             table.setSpacingAfter(10f); // Space after table
             table.setHorizontalAlignment(Element.ALIGN_CENTER); // Center the table
-
-            // Table Headers (Optional, but good for clarity)
-            // table.addCell(getCell("Detail", PdfPCell.ALIGN_LEFT, headerFont));
-            // table.addCell(getCell("Value", PdfPCell.ALIGN_LEFT, headerFont));
 
             // Booking Details
             table.addCell(getCell("Booking ID:", PdfPCell.ALIGN_LEFT, headerFont));
@@ -174,7 +257,6 @@ public class BookingService {
         }
     }
 
-
     private PdfPCell getCell(String text, int alignment, Font font) {
         PdfPCell cell = new PdfPCell(new Phrase(text, font));
         cell.setPadding(8);
@@ -182,9 +264,4 @@ public class BookingService {
         cell.setBorder(PdfPCell.NO_BORDER); 
         return cell;
     }
-
-	public void deleteBooking(Long id) {
-		bookingRepository.deleteById(id);
-	}
-
 }

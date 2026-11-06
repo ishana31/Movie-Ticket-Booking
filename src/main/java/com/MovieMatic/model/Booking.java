@@ -29,10 +29,30 @@ public class Booking {
     
     @Column(nullable = false)
     private LocalDateTime bookingTime;
+
+    @Column(name = "status", nullable = false)
+    private String status = "CONFIRMED";
+
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
+    @Column(name = "refund_amount")
+    private Double refundAmount;
+
+    @Column(name = "cancellation_fee")
+    private Double cancellationFee;
+
+    @Column(name = "refund_status")
+    private String refundStatus;
     
     @PrePersist
     protected void onCreate() {
-        bookingTime = LocalDateTime.now();
+        if (bookingTime == null) {
+            bookingTime = LocalDateTime.now();
+        }
+        if (status == null) {
+            status = "CONFIRMED";
+        }
     }
 
 	public Long getId() {
@@ -81,5 +101,52 @@ public class Booking {
 
 	public void setBookingTime(LocalDateTime bookingTime) {
 		this.bookingTime = bookingTime;
+	}
+
+	public String getStatus() {
+		return status != null ? status : "CONFIRMED";
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public LocalDateTime getCancelledAt() {
+		return cancelledAt;
+	}
+
+	public void setCancelledAt(LocalDateTime cancelledAt) {
+		this.cancelledAt = cancelledAt;
+	}
+
+	public Double getRefundAmount() {
+		return refundAmount;
+	}
+
+	public void setRefundAmount(Double refundAmount) {
+		this.refundAmount = refundAmount;
+	}
+
+	public Double getCancellationFee() {
+		return cancellationFee;
+	}
+
+	public void setCancellationFee(Double cancellationFee) {
+		this.cancellationFee = cancellationFee;
+	}
+
+	public String getRefundStatus() {
+		return refundStatus;
+	}
+
+	public void setRefundStatus(String refundStatus) {
+		this.refundStatus = refundStatus;
+	}
+
+	public Integer getRefundPercentage() {
+		if (totalAmount > 0 && refundAmount != null) {
+			return (int) Math.round((refundAmount / totalAmount) * 100);
+		}
+		return null;
 	}
 }

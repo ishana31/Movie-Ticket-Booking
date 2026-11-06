@@ -2,6 +2,8 @@ package com.MovieMatic.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,10 +37,12 @@ public class Movie {
 		this.releaseDate = releaseDate;
 	}
 
+	@JsonIgnore
 	@Lob
 	@Basic(fetch = FetchType.LAZY)
     private byte[] posterData;
 	
+	@JsonIgnore
 	@Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] backgroundData;
