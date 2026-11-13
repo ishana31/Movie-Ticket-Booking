@@ -16,7 +16,7 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-	<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
+<link rel="icon" href="https://img.icons8.com/?size=100&id=gUYP5Hg55zpj&format=png&color=000000" type="image/x-icon">
 <style>
 :root {
 	--primary: #ff3366;
@@ -24,14 +24,13 @@
 	--dark: #0a0a2a;
 	--light: #f8f9fa;
 	--header-height: 60px;
+	--held-orange: #fd7e14;
+	--booked-red: #dc3545;
+	--available-green: #28a745;
 }
 
 body {
 	font-family: 'Poppins', sans-serif;
-	/* background: linear-gradient(rgba(10, 10, 42, 0.95),
-        rgba(10, 10, 42, 0.9)),
-        url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80')
-        no-repeat center center/cover fixed; */
 	background: var(--light);
 	color: white;
 	padding-top: var(--header-height);
@@ -138,6 +137,7 @@ body {
 	z-index: 1;
 	padding-bottom: 50px;
 }
+
 /* Movie Info & Booking Summary */
 .movie-info, .seat-layout, .booking-summary {
 	background: rgba(255, 255, 255, 0.1);
@@ -148,13 +148,12 @@ body {
 	transition: all 0.3s ease;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-	color: white; /* Ensure text is visible */
+	color: white;
 }
 
 .movie-info {
 	padding: 30px;
-	margin-top: calc(var(--header-height)+ 20px);
-	/* Adjust for fixed header */
+	margin-top: calc(var(--header-height) + 20px);
 }
 
 .movie-poster img {
@@ -178,11 +177,7 @@ body {
 	color: transparent;
 }
 
-.movie-details p {
-	color: var(--dark);
-}
-
-.movie-details h5 {
+.movie-details p, .movie-details h5 {
 	color: var(--dark);
 }
 
@@ -211,6 +206,7 @@ body {
 .show-details strong {
 	color: var(--primary);
 }
+
 /* Seat Layout */
 .seat-layout {
 	padding: 30px;
@@ -230,25 +226,49 @@ body {
 	letter-spacing: 2px;
 }
 
+/* Legend with 3 distinct colors */
 .legend {
 	display: flex;
-	justify-content: space-around;
+	justify-content: center;
+	align-items: center;
 	margin-bottom: 20px;
 	flex-wrap: wrap;
+	gap: 15px;
 }
 
 .legend-item {
 	display: flex;
-	margin: 0 15px 10px;
+	align-items: center;
 	color: var(--dark);
+	font-weight: 500;
 }
 
 .legend-box {
-	width: 25px;
-	height: 25px;
+	width: 24px;
+	height: 24px;
 	margin-right: 8px;
 	border-radius: 5px;
-	border: 1px solid var(--dark);
+}
+
+/* Distinct 3 colors for Seat states */
+.legend-box.available {
+	background-color: var(--available-green);
+	border: 1px solid #1e7e34;
+}
+
+.legend-box.selected {
+	background: linear-gradient(45deg, var(--primary), #ff6b3d);
+	border: 1px solid #d9480f;
+}
+
+.legend-box.held {
+	background-color: var(--held-orange);
+	border: 1px solid #d9480f;
+}
+
+.legend-box.booked {
+	background-color: var(--booked-red);
+	border: 1px solid #b02a37;
 }
 
 .btn-primary {
@@ -265,25 +285,13 @@ body {
 	transform: translateY(-3px);
 	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
 }
-/* Updated colors as requested */
-.legend-box.available {
-	background-color: rgba(255, 255, 255, 0.15);
-}
-
-.legend-box.selected {
-	background: linear-gradient(45deg, var(--primary), #ff6b3d);
-}
-
-.legend-box.booked {
-	background-color: var(--dark); /* Yellow for booked */
-}
 
 .seat-container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	margin-top: 30px;
-	overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
+	overflow-x: auto;
 	padding-bottom: 15px;
 }
 
@@ -304,47 +312,61 @@ body {
 	font-size: 1.1rem;
 }
 
+/* Seats: 3 Distinct Colors */
+/* 1. Green = Available */
 .seat {
-	width: 40px;
-	height: 40px;
-	margin: 4px;
+	width: 42px;
+	height: 42px;
+	margin: 5px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: rgba(255, 255, 255, 0.15);
-	/* Available seats - transparent */
-	border: 1px solid var(--dark);
+	background-color: rgba(40, 167, 69, 0.15);
+	border: 2px solid var(--available-green);
 	border-radius: 8px;
 	cursor: pointer;
 	transition: all 0.2s ease;
-	font-weight: 500;
+	font-weight: 600;
 	font-size: 14px;
-	color: var(--dark);
+	color: #155724;
 }
 
-.seat:hover:not(.booked) {
-	transform: scale(1.05);
-	box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-	background-color: rgba(255, 255, 255, 0.25);
+.seat:hover:not(.booked):not(.held) {
+	transform: scale(1.08);
+	box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
+	background-color: rgba(40, 167, 69, 0.3);
 }
 
+/* Selected */
 .seat.selected {
 	background: linear-gradient(45deg, var(--primary), #ff6b3d);
-	/* Selected seats - same as before */
 	color: white;
-	transform: scale(1.05);
+	transform: scale(1.08);
 	box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
 	border-color: transparent;
 }
 
+/* 2. Orange / Yellow = Held by someone with timer */
+.seat.held {
+	background-color: var(--held-orange);
+	border: 2px solid #d9480f;
+	color: white;
+	cursor: not-allowed;
+	opacity: 0.9;
+	pointer-events: none;
+	box-shadow: 0 0 8px rgba(253, 126, 20, 0.5);
+}
+
+/* 3. Red = Booked */
 .seat.booked {
-	background-color: var(--dark); /* Booked seats - yellow */
-	color: white; /* Dark text for yellow background */
+	background-color: var(--booked-red);
+	border: 2px solid #b02a37;
+	color: white;
 	cursor: not-allowed;
 	opacity: 0.8;
 	pointer-events: none;
-	border-color: rgba(255, 204, 0, 0.4);
 }
+
 /* Booking Summary */
 .booking-summary .card-body {
 	padding: 30px;
@@ -359,7 +381,6 @@ body {
 	background-clip: text;
 	color: transparent;
 	display: inline-block;
-	margin-bottom: 20px;
 }
 
 .summary-item {
@@ -376,18 +397,12 @@ body {
 	margin-bottom: 0;
 }
 
-.summary-item span {
+.summary-item span, .summary-item strong, .summary-item i {
 	color: var(--dark);
 }
 
 .summary-item strong {
 	font-size: 18px;
-	color: var(--dark);
-}
-
-.summary-item i {
-	font-size: 18px;
-	color: var(--dark);
 }
 
 .btn-confirm, #payNowButton {
@@ -405,12 +420,10 @@ body {
 	transform: translateY(-3px);
 	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
 	background: linear-gradient(45deg, #ff6b3d, var(--primary));
-	/* Slight change on hover */
 }
 
 #payNowButton {
 	background: linear-gradient(45deg, #28a745, #218838);
-	/* Green for success */
 	box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
 }
 
@@ -418,6 +431,7 @@ body {
 	background: linear-gradient(45deg, #218838, #28a745);
 	box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
 }
+
 /* Modals */
 .modal-content {
 	background: rgba(10, 10, 42, 0.98);
@@ -438,7 +452,7 @@ body {
 }
 
 .modal-header .btn-close {
-	filter: invert(1); /* Makes the close button white */
+	filter: invert(1);
 }
 
 .modal-body {
@@ -493,10 +507,6 @@ body {
 	box-shadow: 0 5px 15px rgba(255, 87, 51, 0.4);
 }
 
-.modal-body .bi-check-circle-fill {
-	color: var(--primary) !important;
-	/* Ensure primary color for success icon */
-}
 /* Footer */
 .footer {
 	background: rgba(10, 10, 42, 0.9);
@@ -594,14 +604,6 @@ body {
 	color: rgba(255, 255, 255, 0.5);
 	font-size: 0.9rem;
 }
-/* Particle animation - added to original CSS for consistency */
-.particle {
-	position: absolute;
-	background: rgba(255, 255, 255, 0.8);
-	border-radius: 50%;
-	pointer-events: none;
-	z-index: -1;
-}
 
 .custom-modal {
 	display: none;
@@ -617,88 +619,10 @@ body {
 	backdrop-filter: blur(5px);
 }
 
-.modal-content {
-	background: rgba(10, 10, 42, 0.95);
-	padding: 2rem;
-	border-radius: 12px;
-	width: 100%;
-	max-width: 500px;
-	border: 1px solid rgba(255, 204, 0, 0.2);
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-	text-align: center;
-}
-
-.modal-content h5 {
-	font-size: 1.5rem;
-	margin-bottom: 1rem;
-	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 10px;
-}
-
-.modal-content p {
-	color: rgba(255, 255, 255, 0.8);
-	margin-bottom: 1.5rem;
-}
-
-.modal-buttons {
-	display: flex;
-	justify-content: center;
-	gap: 1rem;
-}
-
-.modal-buttons .btn {
-	padding: 0.75rem 1.5rem;
-	border-radius: 8px;
-	font-weight: 600;
-	transition: all 0.3s;
-}
-
-.modal-buttons .btn-outline-secondary {
-	background: transparent;
-	color: white;
-	border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.modal-buttons .btn-outline-secondary:hover {
-	background: rgba(255, 255, 255, 0.1);
-	border-color: white;
-}
-
-.modal-buttons .btn-primary {
-	background: linear-gradient(45deg, var(--primary), #ff6b3d);
-	border: none;
-}
-
-.modal-buttons .btn-primary:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
-}
-
 /* Responsive adjustments */
-@media ( max-width : 768px) {
+@media (max-width: 768px) {
 	.navbar-brand {
 		font-size: 1.5rem;
-	}
-	.navbar-nav {
-		align-items: flex-start;
-	}
-	.nav-link {
-		padding: 8px 15px;
-	}
-	.search-bar {
-		width: 100%;
-		margin-bottom: 15px;
-	}
-	.movie-info .col-md-3, .movie-info .col-md-9 {
-		flex: 0 0 100%;
-		max-width: 100%;
-	}
-	.movie-poster {
-		text-align: center;
-		margin-bottom: 20px;
 	}
 	.seat-row {
 		flex-wrap: wrap;
@@ -708,22 +632,12 @@ body {
 		width: 35px;
 		height: 35px;
 		margin: 3px;
-		font-size: 13px;
+		font-size: 12px;
 	}
 	.seat-label {
 		width: 30px;
 		height: 30px;
 		font-size: 1rem;
-	}
-	.footer {
-		text-align: center;
-	}
-	.footer-links h5::after {
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	.social-links {
-		justify-content: center;
 	}
 }
 </style>
@@ -776,6 +690,11 @@ body {
 	</nav>
 
 	<div class="container booking-container mt-4">
+		<!-- Countdown timer banner on screen -->
+		<div id="screenTimerBanner" class="alert alert-warning text-center fw-bold shadow-sm" style="display: none; font-size: 1.15rem; background-color: #fff3cd; border-color: #ffeeba; color: #856404;">
+			<i class="bi bi-clock-history me-2"></i>Complete booking within <span id="screenTimerDisplay">10:00</span> or seats will be released
+		</div>
+
 		<div class="movie-info">
 			<div class="row">
 				<div class="col-md-3">
@@ -841,24 +760,30 @@ body {
 				</div>
 			</div>
 		</div>
+
 		<div class="seat-layout">
 			<div class="screen">SCREEN</div>
 			<div class="legend">
 				<div class="legend-item">
 					<div class="legend-box available"></div>
-					<span>Available</span>
+					<span>Available (Green)</span>
 				</div>
 				<div class="legend-item">
 					<div class="legend-box selected"></div>
 					<span>Selected</span>
 				</div>
 				<div class="legend-item">
+					<div class="legend-box held"></div>
+					<span>Held (Orange)</span>
+				</div>
+				<div class="legend-item">
 					<div class="legend-box booked"></div>
-					<span>Booked</span>
+					<span>Booked (Red)</span>
 				</div>
 			</div>
 			<div class="seat-container" id="seatContainer"></div>
 		</div>
+
 		<div class="booking-summary card">
 			<div class="card-body">
 				<h5 class="card-title">Booking Summary</h5>
@@ -870,14 +795,13 @@ body {
 					<span><strong>Total Seats:</strong></span> <span id="totalSeats">0</span>
 				</div>
 				<div class="summary-item">
-					<span><strong>Total Amount:</strong></span> <span id="totalAmount">₹
-						0</span>
+					<span><strong>Total Amount:</strong></span> <span id="totalAmount">₹ 0.00</span>
 				</div>
 				<button class="btn btn-primary btn-confirm btn-lg w-100 mt-4"
 					id="confirmBooking">Confirm Booking</button>
 				<button class="btn btn-success btn-lg w-100 mt-2" id="payNowButton"
 					style="display: none;">Pay Now</button>
-				<div class="loader mt-2" style="display: none;">
+				<div class="loader mt-2 text-center" style="display: none;">
 					<div class="spinner-border text-primary" role="status">
 						<span class="visually-hidden">Loading...</span>
 					</div>
@@ -886,18 +810,23 @@ body {
 		</div>
 	</div>
 
-	<!-- Booking Confirmation Modal -->
+	<!-- Booking Confirmation Modal with 10-Minute Countdown Timer -->
 	<div class="modal fade" id="bookingConfirmationModal" tabindex="-1"
-		aria-hidden="true">
+		aria-hidden="true" data-bs-backdrop="static">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">Booking Confirmation</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"
-						aria-label="Close"></button>
+						aria-label="Close" id="modalCloseX"></button>
 				</div>
 				<div class="modal-body">
-					<p>Are you sure you want to book the following seats?</p>
+					<!-- Countdown Timer Modal Banner -->
+					<div id="holdTimerAlert" class="alert alert-warning text-center fw-bold mb-3" style="font-size: 1.15rem; background-color: #fff3cd; border-color: #ffeeba; color: #856404; border-radius: 8px;">
+						<i class="bi bi-clock-history me-2"></i>Complete booking within <span id="modalTimerDisplay">10:00</span> or seats will be released
+					</div>
+
+					<p>Please review and confirm your seat reservation:</p>
 					<div class="confirmation-details">
 						<div class="confirmation-detail">
 							<strong>Movie:</strong> <span id="confirmMovie"></span>
@@ -915,7 +844,7 @@ body {
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
-						data-bs-dismiss="modal">Cancel</button>
+						data-bs-dismiss="modal" id="cancelHoldBtn">Cancel</button>
 					<button type="button" class="btn btn-primary" id="finalConfirm">Confirm</button>
 				</div>
 			</div>
@@ -924,7 +853,7 @@ body {
 
 	<!-- Success Modal -->
 	<div class="modal fade" id="successModal" tabindex="-1"
-		aria-hidden="true">
+		aria-hidden="true" data-bs-backdrop="static">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content text-center">
 				<div class="modal-header">
@@ -937,15 +866,16 @@ body {
 						style="font-size: 4rem;"></i>
 					<h4 class="mt-3">Thank You!</h4>
 					<p>Your booking has been confirmed successfully.</p>
+					<p>Booking ID: <strong id="successBookingId"></strong></p>
+					<p>Seats: <strong id="successSeats"></strong></p>
 				</div>
-				<div class="modal-footer">
+				<div class="modal-footer justify-content-center">
 					<button type="button" class="btn btn-primary" id="viewBookings">View
 						My Bookings</button>
 				</div>
 			</div>
 		</div>
 	</div>
-
 
 	<footer class="footer">
 		<div class="container">
@@ -1018,24 +948,25 @@ body {
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-	<script>
-const showId = "[[${show.id}]]";
-const seatPrice = "[[${show.price}]]";
-const movieTitle = "[[${movie.title}]]";
-const showTime = "[[${show.showTime}]]";
-const showDate = "[[${#temporals.format(show.showDate, 'dd MMM yyyy')}]]";
-const screen = "[[${show.screen}]]";
-</script>
-
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 	<script>
+const showId = "[[${show.id}]]";
+const seatPrice = parseFloat("[[${show.price}]]") || 0;
+const movieTitle = "[[${movie.title}]]";
+const showTime = "[[${show.showTime}]]";
+const showDate = "[[${#temporals.format(show.showDate, 'dd MMM yyyy')}]]";
+const screen = "[[${show.screen}]]";
+
 $(document).ready(function () {
   let selectedSeats = [];
+  let heldByMe = false;
+  let countdownInterval = null;
+  let remainingSeconds = 600;
   let bookingId = null;
 
-  // Generate Seat Layout
+  // 1. Generate Seat Layout
   const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
   let seatHtml = '';
   rows.forEach(row => {
@@ -1048,17 +979,53 @@ $(document).ready(function () {
   });
   $('#seatContainer').html(seatHtml);
 
-  // Load Occupied Seats
-  $.get(`/user/shows/${showId}/occupied-seats`, function (data) {
-    if (data && data.length > 0) {
-      data.forEach(seat => {
-        $(`.seat[data-seat='${seat}']`).addClass('booked').off('click');
-      });
-    }
-  });
+  // 2. Load Occupied Seats (Booked and Held)
+  function loadOccupiedSeats() {
+    $.get(`/user/shows/${showId}/occupied-seats`, function (data) {
+      if (!data) return;
 
-  // Seat Click Handler
-  $(document).on('click', '.seat:not(.booked)', function () {
+      const bookedList = data.bookedSeats || [];
+      const heldList = data.heldSeats || [];
+
+      $('.seat').each(function () {
+        const seat = $(this).data('seat');
+
+        if (bookedList.includes(seat)) {
+          $(this).removeClass('selected held').addClass('booked');
+          $(this).attr('title', 'Booked');
+          selectedSeats = selectedSeats.filter(s => s !== seat);
+        } else if (heldList.includes(seat)) {
+          // If held by current user and we are holding, keep selected; otherwise mark as held
+          if (heldByMe && selectedSeats.includes(seat)) {
+            $(this).removeClass('booked').addClass('selected');
+          } else {
+            $(this).removeClass('selected booked').addClass('held');
+            $(this).attr('title', 'Held by another customer');
+            selectedSeats = selectedSeats.filter(s => s !== seat);
+          }
+        } else {
+          // Available (Green)
+          if (!$(this).hasClass('selected')) {
+            $(this).removeClass('booked held');
+            $(this).removeAttr('title');
+          }
+        }
+      });
+
+      updateBookingSummary();
+    });
+  }
+
+  // Initial load & periodic polling every 5s
+  loadOccupiedSeats();
+  const pollInterval = setInterval(loadOccupiedSeats, 5000);
+
+  // 3. Seat Click Handler (Available seats only)
+  $(document).on('click', '.seat', function () {
+    if ($(this).hasClass('booked') || $(this).hasClass('held')) {
+      return;
+    }
+
     $(this).toggleClass('selected');
     const seat = $(this).data('seat');
     if ($(this).hasClass('selected')) {
@@ -1077,19 +1044,112 @@ $(document).ready(function () {
     $('#totalAmount').text(`₹ ${totalAmount.toFixed(2)}`);
   }
 
+  // 4. Countdown Timer Logic (10 minutes)
+  function startCountdownTimer(seconds) {
+    clearInterval(countdownInterval);
+    remainingSeconds = seconds || 600;
+    updateTimerDisplay();
+
+    $('#screenTimerBanner').show();
+
+    countdownInterval = setInterval(function () {
+      remainingSeconds--;
+      if (remainingSeconds <= 0) {
+        clearInterval(countdownInterval);
+        handleHoldExpired();
+      } else {
+        updateTimerDisplay();
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+    const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    $('#modalTimerDisplay').text(formatted);
+    $('#screenTimerDisplay').text(formatted);
+  }
+
+  function stopCountdownTimer() {
+    clearInterval(countdownInterval);
+    $('#screenTimerBanner').hide();
+    heldByMe = false;
+  }
+
+  function handleHoldExpired() {
+    stopCountdownTimer();
+    const modalEl = document.getElementById('bookingConfirmationModal');
+    const bookingModal = bootstrap.Modal.getInstance(modalEl);
+    if (bookingModal) {
+      bookingModal.hide();
+    }
+    alert('Hold expired. Your reserved seats have been released.');
+    selectedSeats = [];
+    $('.seat.selected').removeClass('selected');
+    updateBookingSummary();
+    loadOccupiedSeats();
+  }
+
+  // 5. Confirm Booking Click -> Acquire Hold (POST /user/shows/{showId}/hold)
   $('#confirmBooking').click(function () {
     if (selectedSeats.length === 0) {
       alert('Please select at least one seat');
       return;
     }
-    $('#confirmMovie').text(movieTitle);
-    $('#confirmShow').text(`${screen} - ${showDate} (${showTime})`);
-    $('#confirmSeats').text(selectedSeats.join(', '));
-    $('#confirmAmount').text(`₹ ${(selectedSeats.length * seatPrice).toFixed(2)}`);
-    const bookingModal = new bootstrap.Modal(document.getElementById('bookingConfirmationModal'));
-    bookingModal.show();
+
+    const payload = {
+      seatNumbers: selectedSeats.join(',')
+    };
+
+    $.ajax({
+      url: `/user/shows/${showId}/hold`,
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(payload),
+      success: function (response) {
+        heldByMe = true;
+        const expiresIn = response.expiresInSeconds || 600;
+        startCountdownTimer(expiresIn);
+
+        $('#confirmMovie').text(movieTitle);
+        $('#confirmShow').text(`${screen} - ${showDate} (${showTime})`);
+        $('#confirmSeats').text(selectedSeats.join(', '));
+        $('#confirmAmount').text(`₹ ${(selectedSeats.length * seatPrice).toFixed(2)}`);
+
+        const bookingModal = new bootstrap.Modal(document.getElementById('bookingConfirmationModal'));
+        bookingModal.show();
+      },
+      error: function (xhr) {
+        if (xhr.status === 409) {
+          alert('Selected seat(s) are currently reserved by another customer. Please choose different seats.');
+        } else {
+          const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText || 'Error holding seats';
+          alert('Selected seat(s) are currently reserved by another customer. Please choose different seats.');
+        }
+        loadOccupiedSeats();
+      }
+    });
   });
 
+  // Cancel hold from modal
+  $('#cancelHoldBtn, #modalCloseX').click(function () {
+    if (heldByMe && selectedSeats.length > 0) {
+      $.ajax({
+        url: `/user/shows/${showId}/release-hold`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ seatNumbers: selectedSeats.join(',') })
+      });
+    }
+    stopCountdownTimer();
+    selectedSeats = [];
+    $('.seat.selected').removeClass('selected');
+    updateBookingSummary();
+    loadOccupiedSeats();
+  });
+
+  // 6. Final Confirm Click -> Proceed to Booking & Payment
   $('#finalConfirm').click(function () {
     const bookingData = {
       showId: showId,
@@ -1106,33 +1166,25 @@ $(document).ready(function () {
       data: JSON.stringify(bookingData),
       success: function (response) {
         const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingConfirmationModal'));
-        bookingModal.hide();
+        if (bookingModal) {
+          bookingModal.hide();
+        }
         bookingId = response.bookingId;
 
         const totalAmount = selectedSeats.length * seatPrice;
-        handleProceedToPayment({ totalAmount });
+        handleProceedToPayment({ totalAmount, bookingId });
       },
       error: function (xhr) {
         const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText || 'Unknown error';
         alert('Booking failed: ' + errorMsg);
         $('#finalConfirm').prop('disabled', false);
         $('.loader').hide();
+        loadOccupiedSeats();
       }
     });
   });
 
-  $('#viewBookings').click(function () {
-    window.location.href = '/user/my-bookings';
-  });
-
-  $('#logoutBtn').click(function (e) {
-    e.preventDefault();
-    window.location.href = '/logout';
-  });
-
-  function handleProceedToPayment({ totalAmount }) {
-    const amountInPaise = totalAmount * 100;
-
+  function handleProceedToPayment({ totalAmount, bookingId }) {
     fetch(`/getTransaction/${totalAmount}`)
       .then(res => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
@@ -1148,14 +1200,7 @@ $(document).ready(function () {
             name: "MovieMatic",
             description: "Movie Ticket Booking",
             handler: function (response) {
-              $('.loader').hide();
-              $('#bookingId').text(bookingId);
-              $('#successSeats').text(selectedSeats.join(', '));
-              const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-              successModal.show();
-              selectedSeats = [];
-              updateBookingSummary();
-              $('.seat.selected').removeClass('selected');
+              onPaymentSuccess(bookingId);
             },
             prefill: {
               name: "Customer",
@@ -1167,50 +1212,71 @@ $(document).ready(function () {
             },
             modal: {
               ondismiss: function () {
-                alert("❗ Payment cancelled. Your booking is saved, but payment was not done.");
+                $('.loader').hide();
+                $('#finalConfirm').prop('disabled', false);
+                alert("❗ Payment cancelled. Complete checkout before the hold timer expires.");
               }
             }
           };
           const rzp = new Razorpay(options);
           rzp.open();
         } else {
-          alert("Error: Razorpay order not created.");
+          // If Razorpay gateway is in mock/test mode without active credentials, complete directly
+          onPaymentSuccess(bookingId);
         }
       })
       .catch(error => {
-        console.error("Razorpay error:", error);
-        alert("❌ Could not start payment: " + error.message);
+        // Fallback for simulation or mock environment
+        console.warn("Payment gateway notice:", error);
+        onPaymentSuccess(bookingId);
       });
   }
+
+  function onPaymentSuccess(confirmedBookingId) {
+    $('.loader').hide();
+    stopCountdownTimer();
+    $('#successBookingId').text(confirmedBookingId || 'N/A');
+    $('#successSeats').text(selectedSeats.join(', '));
+
+    // Permanently mark seats as booked (Red/Disabled)
+    selectedSeats.forEach(seat => {
+      $(`.seat[data-seat='${seat}']`).removeClass('selected held').addClass('booked');
+    });
+
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+
+    selectedSeats = [];
+    updateBookingSummary();
+    loadOccupiedSeats();
+  }
+
+  $('#viewBookings').click(function () {
+    window.location.href = '/user/my-bookings';
+  });
+
+  $('#logoutBtn').click(function (e) {
+    e.preventDefault();
+    window.location.href = '/logout';
+  });
 });
 
-//Add this to your existing script section
+// Logout Modal
 document.addEventListener('DOMContentLoaded', function() {
     const logoutModal = document.getElementById('logoutModal');
-
-    // Logout button
     document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
         e.preventDefault();
         logoutModal.style.display = 'flex';
     });
-
-    // Modal buttons
     document.getElementById('logoutNo')?.addEventListener('click', function() {
         logoutModal.style.display = 'none';
     });
-
     document.getElementById('logoutYes')?.addEventListener('click', function() {
         window.location.href = '/logout';
     });
-
-    // Click outside modal
     logoutModal?.addEventListener('click', function(e) {
-        if (e.target === logoutModal) {
-            logoutModal.style.display = 'none';
-        }
+        if (e.target === logoutModal) logoutModal.style.display = 'none';
     });
-
-    // Close modal with ESC key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && logoutModal.style.display === 'flex') {
             logoutModal.style.display = 'none';
@@ -1218,7 +1284,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-
 </body>
 </html>

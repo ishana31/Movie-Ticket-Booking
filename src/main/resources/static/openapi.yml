@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic API Specification
+  description: OpenAPI 3.0 specification for MovieMatic Ticket Booking Application, including concurrency-safe temporary seat holding and auto-release TTL.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+paths:
+  /user/shows/{showId}/hold:
+    post:
+      summary: Place temporary hold on seats for a show
+      description: Atomically reserves seats with a 10-minute hold TTL. Only one user can hold a seat at a time.
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the show
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoldSeatRequest'
+      responses:
+        '200':
+          description: Seats successfully held
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoldSeatResponse'
+        '409':
+          description: Seats already held or booked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/shows/{showId}/release-hold:
+    post:
+      summary: Explicitly release seat hold
+      description: Releases seats currently held by the authenticated user back to AVAILABLE status.
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the show
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoldSeatRequest'
+      responses:
+        '200':
+          description: Hold successfully released
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: AVAILABLE
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Get occupied seats for a show
+      description: Returns lists of permanently booked seats and currently active held seats.
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the show
+      responses:
+        '200':
+          description: Occupied seats details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupiedSeatsResponse'
+
+  /user/bookings:
+    post:
+      summary: Confirm booking and transition seats to BOOKED
+      description: Validates that the current user owns active holds on the requested seats, records the booking, and permanently marks seats as BOOKED.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookingRequest'
+      responses:
+        '200':
+          description: Booking successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBookingResponse'
+        '409':
+          description: Seat conflicts or hold expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    HoldSeatRequest:
+      type: object
+      required:
+        - seatNumbers
+      properties:
+        seatNumbers:
+          type: string
+          example: "A1,A2"
+          description: Comma-separated list of seat numbers
+
+    HoldSeatResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: HELD
+        expiresInSeconds:
+          type: integer
+          example: 600
+
+    OccupiedSeatsResponse:
+      type: object
+      properties:
+        bookedSeats:
+          type: array
+          items:
+            type: string
+          example: ["B1", "B2"]
+        heldSeats:
+          type: array
+          items:
+            type: string
+          example: ["A1", "A2"]
+
+    CreateBookingRequest:
+      type: object
+      required:
+        - showId
+        - seatNumbers
+      properties:
+        showId:
+          type: integer
+          format: int64
+          example: 1
+        seatNumbers:
+          type: string
+          example: "A1,A2"
+
+    CreateBookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+          example: 42
+        message:
+          type: string
+          example: "Booking successful! Confirmation email sent to user@example.com"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Seats already held or booked"
