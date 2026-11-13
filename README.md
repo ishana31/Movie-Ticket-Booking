@@ -10,6 +10,12 @@
 - Movie and Show management (CRUD) for Admin
 - Dynamic Admin Dashboard with revenue, booking stats
 - User dashboard with carousels and movie discovery
+- **Concurrency-Safe Seat Reservation System (KAN-11):**
+  - Real-time temporary seat hold with 10-minute countdown timer (TTL)
+  - Color-coded seat visualizer: Green (Available), Orange (Held), Red (Booked)
+  - Auto-release background cleanup task running every 60 seconds
+  - Single-owner purchase invariant & atomic multi-seat hold
+  - Race-condition safe reservation under concurrent traffic
 - Interactive seat selection and Razorpay integration
 - Email ticket confirmation and PDF download
 - Responsive UI with Bootstrap
@@ -19,12 +25,32 @@
 
 ## 🛠️ Technologies Used
 
-- **Backend:** Spring Boot, Java, Spring Security
-- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5
-- **Database:** MySQL/PostgreSQL
-- **Email & PDF:** JavaMailSender, iText/Apache PDFBox, ZXing for QR Code
+- **Backend:** Spring Boot 3.5.0, Java 17, Spring Security, Spring Data JPA
+- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5, jQuery
+- **Database:** PostgreSQL / MySQL
+- **Email & PDF:** JavaMailSender, OpenPDF / iText, ZXing for QR Code
 - **Payment:** Razorpay integration
-- **Security:** Role-based login, OTP password reset
+- **Security:** Role-based access control, BCrypt encryption, OTP password reset
+
+---
+
+## 🎫 Real-Time Concurrency-Safe Seat Hold (KAN-11)
+
+### Endpoints
+- `POST /user/shows/{showId}/hold`:
+  - Request: `{ "seatNumbers": "A1,A2" }`
+  - Response: `200 OK` `{ "status": "HELD", "expiresInSeconds": 600 }`
+  - Conflict: `409 Conflict` `{ "message": "Seats already held or booked" }`
+- `GET /user/shows/{showId}/occupied-seats`:
+  - Response: `200 OK` `{ "bookedSeats": ["B1", "B2"], "heldSeats": ["A1", "A2"] }`
+- `POST /user/shows/{showId}/release-hold`:
+  - Releases seats explicitly when user cancels or leaves checkout
+
+### Business Rules & Invariants
+- **Atomic Reservation:** All selected seats must be secured together; if one is unavailable, none are held.
+- **Single Owner:** Only the user who placed the hold can complete the purchase.
+- **Timeout (TTL):** Temporary holds strictly expire after 10 minutes.
+- **Background Cleanup:** `@Scheduled` task running every 60 seconds auto-releasing expired seats back to `AVAILABLE`.
 
 ---
 
@@ -68,7 +94,8 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - View detailed movie pages with cast, synopsis, shows
 
 ### 🎫 Booking Flow
-- Interactive seat layout: select, view price, and pay
+- Interactive seat layout with real-time status: Green (Available), Orange (Held), Red (Booked)
+- 10-minute hold countdown timer modal during checkout
 - Razorpay integration for secure transactions
 - Booking summary with selected seats and total amount
 
@@ -80,31 +107,15 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - Update personal details and password
 - “Forgot Password” with OTP email verification
 
-### 📱 Fully Responsive UI
-- Works smoothly across mobile, tablet, and desktop devices
-
 ---
 
-## 🧾 Summary Table – Admin vs. User
+## 🧾 Backlog & Release Progress
 
-| Feature/Section     | Admin Capabilities                                    | User Capabilities                                      |
-|---------------------|--------------------------------------------------------|--------------------------------------------------------|
-| **Dashboard**       | View stats, recent movies/shows/bookings              | View carousels, top movies, upcoming releases         |
-| **Movie Management**| Add, edit, delete, search movies                      | Browse, search, filter movies                         |
-| **Show Management** | Add, edit, delete shows                               | View shows, book tickets                              |
-| **Booking Management**| View all bookings, delete, view user info          | View, delete own bookings, download PDF               |
-| **Profile Management**| (Optional)                                          | Update profile, change password, OTP reset            |
-| **Payments**        | View revenue stats                                    | Razorpay checkout for booking                         |
-| **Email Integration**| Optional for alerts                                  | Confirmation emails for bookings & reset              |
-| **Security**        | Role-based control, session handling                  | Secure login, OTP reset                               |
-
----
-
-## 🔐 Security Highlights
-
-- JWT or session-based login
-- Passwords encrypted using BCrypt
-- OTP-based password recovery
-- Admin features protected by role-based access control
-
----
+- [x] **KAN-11:** Implement Concurrency-Safe Seat Reservation System with Temporary Hold & Auto-Release (TTL)
+  - [x] Database table `show_seats` with unique constraint `(show_id, seat_number)`
+  - [x] Domain entity `ShowSeat` and `ShowSeatRepository`
+  - [x] Service layer transactional locking in `SeatReservationService`
+  - [x] Scheduled auto-release cleanup task running every 60s
+  - [x] Endpoints `POST /user/shows/{showId}/hold` and `GET /user/shows/{showId}/occupied-seats`
+  - [x] UI visualizer in `book.html` (3 distinct colors: Green, Orange, Red) and 10-min countdown modal
+  - [x] Concurrency and atomic reservation automated tests
