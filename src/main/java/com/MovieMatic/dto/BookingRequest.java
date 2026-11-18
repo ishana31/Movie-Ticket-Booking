@@ -1,34 +1,50 @@
 package com.MovieMatic.dto;
 
 public class BookingRequest {
-	private Long showId;
 
-	private String seatNumbers;
+    private Long showId;
+    private String seatNumbers;
+    private int seatCount;
+    private String couponCode;
 
-	private int seatCount;
+    public BookingRequest() {
+    }
 
-	// Getters and setters
-	public Long getShowId() {
-		return showId;
-	}
+    public BookingRequest(Long showId, String seatNumbers, String couponCode) {
+        this.showId = showId;
+        this.seatNumbers = seatNumbers;
+        this.couponCode = couponCode;
+    }
 
-	public void setShowId(Long showId) {
-		this.showId = showId;
-	}
+    public Long getShowId() {
+        return showId;
+    }
 
-	public String getSeatNumbers() {
-		return seatNumbers;
-	}
+    public void setShowId(Long showId) {
+        this.showId = showId;
+    }
 
-	public void setSeatNumbers(String seatNumbers) {
-		this.seatNumbers = seatNumbers;
-	}
+    public String getSeatNumbers() {
+        return seatNumbers;
+    }
 
-	public int getSeatCount() {
-		return seatCount;
-	}
+    public void setSeatNumbers(String seatNumbers) {
+        this.seatNumbers = seatNumbers;
+    }
 
-	public void setSeatCount(int seatCount) {
-		this.seatCount = seatCount;
-	}
+    public int getSeatCount() {
+        return seatCount;
+    }
+
+    public void setSeatCount(int seatCount) {
+        this.seatCount = seatCount;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
 }
