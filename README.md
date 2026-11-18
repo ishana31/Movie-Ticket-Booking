@@ -11,6 +11,11 @@
 - Dynamic Admin Dashboard with revenue, booking stats
 - User dashboard with carousels and movie discovery
 - Interactive seat selection and Razorpay integration
+- **Promotional Discounts & Coupon Engine (KAN-12)**:
+  - Percentage and flat-rate promo codes (e.g. `SAVE20`, `FLAT50`)
+  - Real-time coupon validation, min spend checks, and instant UI total recalculation
+  - Server-side price recalculation preventing client-side tampering
+  - Expiry and maximum usage limits enforcement
 - Email ticket confirmation and PDF download
 - Responsive UI with Bootstrap
 - Secure login and password reset via OTP
@@ -20,91 +25,29 @@
 ## 🛠️ Technologies Used
 
 - **Backend:** Spring Boot, Java, Spring Security
-- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5
-- **Database:** MySQL/PostgreSQL
-- **Email & PDF:** JavaMailSender, iText/Apache PDFBox, ZXing for QR Code
+- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5, jQuery
+- **Database:** PostgreSQL / MySQL, Spring Data JPA
+- **Email & PDF:** JavaMailSender, OpenPDF / iText, ZXing for QR Code
 - **Payment:** Razorpay integration
-- **Security:** Role-based login, OTP password reset
+- **Security:** Role-based access control, BCrypt password hashing
 
 ---
 
-## 👤 Admin Role: Features and Flow
+## 🎟️ Coupon & Promotional Discount Engine
 
-The **Admin** is responsible for managing all data and monitoring platform usage.
+### Endpoints
+- `POST /user/coupons/validate`
+  - Validates promo code validity, expiration date, usage limits, and minimum order threshold.
+  - Body: `{ "code": "SAVE20", "totalAmount": 500.0 }`
+  - Response: `200 OK` with `{ "valid": true, "discountAmount": 100.0, "finalAmount": 400.0 }`
+  - Error: `400 Bad Request` with `{ "message": "Invalid or expired coupon code" }` or minimum spend warning.
 
-### Dashboard
-- Displays total bookings, revenue, movies, and shows
-- Shows recent activity: latest movies/shows/bookings
-
-### 🎞️ Movie Management
-- Add/Edit/Delete/Search movies
-- Upload poster and background images (stored as BLOBs)
-
-### 📅 Show Management
-- Add/Edit/Delete shows
-- Set show time, screen, date, price, and linked movie
-
-### 🎟️ Booking Management
-- View all bookings, search/filter by user/movie/date
-- View user info and delete bookings if needed
-
-### 🔒 Security
-- Role-based access and secure session management
-- Sidebar navigation for quick access to all sections
+- `POST /user/bookings` (Updated)
+  - Recalculates seat prices and discounts server-side before booking creation.
+  - Body: `{ "showId": 1, "seatNumbers": "A1,A2", "couponCode": "SAVE20" }`
+  - Response: `200 OK` with `{ "bookingId": 1, "totalAmount": 400.0, "discountAmount": 100.0 }`
 
 ---
 
-## 🙋‍♂️ User Role: Features and Flow
-
-The **User** experiences a smooth, engaging interface to explore and book movie tickets.
-
-### 🏠 Dashboard
-- Scrollable carousels for featured, top, and upcoming movies
-- Visual UI encouraging movie discovery
-
-### 🔍 Movie Discovery
-- Browse All Movies page
-- Filter by genre or search by name
-- View detailed movie pages with cast, synopsis, shows
-
-### 🎫 Booking Flow
-- Interactive seat layout: select, view price, and pay
-- Razorpay integration for secure transactions
-- Booking summary with selected seats and total amount
-
-### 📧 Email + PDF Ticket
-- Booking confirmation sent via email
-- PDF ticket available for download anytime
-
-### 👤 Profile Management
-- Update personal details and password
-- “Forgot Password” with OTP email verification
-
-### 📱 Fully Responsive UI
-- Works smoothly across mobile, tablet, and desktop devices
-
----
-
-## 🧾 Summary Table – Admin vs. User
-
-| Feature/Section     | Admin Capabilities                                    | User Capabilities                                      |
-|---------------------|--------------------------------------------------------|--------------------------------------------------------|
-| **Dashboard**       | View stats, recent movies/shows/bookings              | View carousels, top movies, upcoming releases         |
-| **Movie Management**| Add, edit, delete, search movies                      | Browse, search, filter movies                         |
-| **Show Management** | Add, edit, delete shows                               | View shows, book tickets                              |
-| **Booking Management**| View all bookings, delete, view user info          | View, delete own bookings, download PDF               |
-| **Profile Management**| (Optional)                                          | Update profile, change password, OTP reset            |
-| **Payments**        | View revenue stats                                    | Razorpay checkout for booking                         |
-| **Email Integration**| Optional for alerts                                  | Confirmation emails for bookings & reset              |
-| **Security**        | Role-based control, session handling                  | Secure login, OTP reset                               |
-
----
-
-## 🔐 Security Highlights
-
-- JWT or session-based login
-- Passwords encrypted using BCrypt
-- OTP-based password recovery
-- Admin features protected by role-based access control
-
----
+## 📋 Feature Backlog
+- [x] KAN-12: Coupon & Promotional Discount Engine

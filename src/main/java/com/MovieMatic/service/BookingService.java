@@ -14,7 +14,6 @@ import com.MovieMatic.model.Booking;
 import com.MovieMatic.model.Show;
 import com.MovieMatic.model.User;
 import com.MovieMatic.repository.BookingRepository;
-// Corrected iText imports
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -46,8 +45,6 @@ public class BookingService {
         return bookingRepository.findByUser(user);
     }
 
-    
-    
     public List<String> getOccupiedSeats(Show show) {
         List<Booking> bookings = bookingRepository.findByShow(show);
 
@@ -58,18 +55,6 @@ public class BookingService {
         }
         return occupied;
     }
-    
-    
-//    public List<String> getOccupiedSeats(Show show) {
-//        List<Booking> bookings = bookingRepository.findByShow(show);
-//        List<String> occupied = new ArrayList<>();
-//
-//        for (Booking b : bookings) {
-//            String[] seats = b.getSeatNumbers().split(",");
-//            occupied.addAll(Arrays.asList(seats));
-//        }
-//        return occupied;
-//    }
 
     public long getTotalBookingsCount() {
         return bookingRepository.count();
@@ -87,20 +72,12 @@ public class BookingService {
     public void deleteByShowId(Long showId) {
         bookingRepository.deleteByShowId(showId);
     }
-    
-
-//    public void deleteBooking(Long id) {
-//        bookingRepository.deleteById(id);
-//    }	
-//    
-   
 
     public void generatePdfTicket(Long bookingId, HttpServletResponse response) {
         try {
             Booking booking = bookingRepository.findById(bookingId)
                                 .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + bookingId));
 
-            // Ensure show and movie are loaded (might need @Transactional or eager fetching)
             Show show = booking.getShow();
             if (show == null || show.getMovie() == null) {
                 throw new RuntimeException("Booking details (Show or Movie) are incomplete.");
@@ -119,7 +96,6 @@ public class BookingService {
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, Color.BLACK);
             Font cellFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.BLACK);
 
-
             // Title
             Paragraph title = new Paragraph("🎬 Movie Ticket", titleFont);
             title.setAlignment(Paragraph.ALIGN_CENTER);
@@ -129,14 +105,10 @@ public class BookingService {
 
             // Create a table for booking details
             PdfPTable table = new PdfPTable(2);
-            table.setWidthPercentage(80); // Set table width to 80% of page width
-            table.setSpacingBefore(10f); // Space before table
-            table.setSpacingAfter(10f); // Space after table
-            table.setHorizontalAlignment(Element.ALIGN_CENTER); // Center the table
-
-            // Table Headers (Optional, but good for clarity)
-            // table.addCell(getCell("Detail", PdfPCell.ALIGN_LEFT, headerFont));
-            // table.addCell(getCell("Value", PdfPCell.ALIGN_LEFT, headerFont));
+            table.setWidthPercentage(80);
+            table.setSpacingBefore(10f);
+            table.setSpacingAfter(10f);
+            table.setHorizontalAlignment(Element.ALIGN_CENTER);
 
             // Booking Details
             table.addCell(getCell("Booking ID:", PdfPCell.ALIGN_LEFT, headerFont));
@@ -157,6 +129,14 @@ public class BookingService {
             table.addCell(getCell("Seats:", PdfPCell.ALIGN_LEFT, headerFont));
             table.addCell(getCell(booking.getSeatNumbers(), PdfPCell.ALIGN_LEFT, cellFont));
 
+            if (booking.getCouponCode() != null && !booking.getCouponCode().isEmpty()) {
+                table.addCell(getCell("Coupon Applied:", PdfPCell.ALIGN_LEFT, headerFont));
+                table.addCell(getCell(booking.getCouponCode(), PdfPCell.ALIGN_LEFT, cellFont));
+
+                table.addCell(getCell("Discount Amount:", PdfPCell.ALIGN_LEFT, headerFont));
+                table.addCell(getCell("₹" + String.format("%.2f", booking.getDiscountAmount()), PdfPCell.ALIGN_LEFT, cellFont));
+            }
+
             table.addCell(getCell("Total Price:", PdfPCell.ALIGN_LEFT, headerFont));
             table.addCell(getCell("₹" + String.format("%.2f", booking.getTotalAmount()), PdfPCell.ALIGN_LEFT, cellFont));
 
@@ -174,7 +154,6 @@ public class BookingService {
         }
     }
 
-
     private PdfPCell getCell(String text, int alignment, Font font) {
         PdfPCell cell = new PdfPCell(new Phrase(text, font));
         cell.setPadding(8);
@@ -186,5 +165,4 @@ public class BookingService {
 	public void deleteBooking(Long id) {
 		bookingRepository.deleteById(id);
 	}
-
 }
