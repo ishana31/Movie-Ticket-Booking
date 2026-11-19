@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic API
+  description: Movie Ticket Booking Application REST API
+  version: 1.0.0
+paths:
+  /user/coupons/validate:
+    post:
+      summary: Validate a promotional coupon code
+      description: Validates coupon code, expiration date, active status, usage limits, and minimum order amount. Calculates discount amount and final payable amount server-side.
+      operationId: validateCoupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - totalAmount
+              properties:
+                code:
+                  type: string
+                  example: "SAVE20"
+                totalAmount:
+                  type: number
+                  format: double
+                  example: 500.0
+      responses:
+        '200':
+          description: Coupon successfully validated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    example: true
+                  discountAmount:
+                    type: number
+                    format: double
+                    example: 100.0
+                  finalAmount:
+                    type: number
+                    format: double
+                    example: 400.0
+        '400':
+          description: Invalid, expired coupon or unmet minimum order amount
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid or expired coupon code"
+
+  /user/bookings:
+    post:
+      summary: Create a new booking
+      description: Creates a movie ticket booking, recalculates discount if couponCode is provided, increments coupon usage, and sends confirmation email with PDF ticket.
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - showId
+                - seatNumbers
+              properties:
+                showId:
+                  type: integer
+                  format: int64
+                  example: 1
+                seatNumbers:
+                  type: string
+                  example: "A1,A2"
+                couponCode:
+                  type: string
+                  nullable: true
+                  example: "SAVE20"
+      responses:
+        '200':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookingId:
+                    type: integer
+                    format: int64
+                    example: 1
+                  totalAmount:
+                    type: number
+                    format: double
+                    example: 400.0
+                  discountAmount:
+                    type: number
+                    format: double
+                    example: 100.0
+        '400':
+          description: Invalid request or invalid coupon code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid or expired coupon code"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Booking failed: Internal error"
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Get occupied seats for a show
+      operationId: getOccupiedSeats
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of occupied seat identifiers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "A1"

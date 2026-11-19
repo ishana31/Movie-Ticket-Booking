@@ -11,6 +11,7 @@
 - Dynamic Admin Dashboard with revenue, booking stats
 - User dashboard with carousels and movie discovery
 - Interactive seat selection and Razorpay integration
+- Promotional Discount Engine with percentage and flat coupons (KAN-13)
 - Email ticket confirmation and PDF download
 - Responsive UI with Bootstrap
 - Secure login and password reset via OTP
@@ -67,10 +68,12 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - Filter by genre or search by name
 - View detailed movie pages with cast, synopsis, shows
 
-### 🎫 Booking Flow
-- Interactive seat layout: select, view price, and pay
-- Razorpay integration for secure transactions
-- Booking summary with selected seats and total amount
+### 🎫 Booking & Coupon Flow
+- Interactive seat layout: select seats and view calculated price
+- Checkout modal with promo code support (percentage and flat discounts)
+- Real-time server-side validation preventing client price tampering
+- Razorpay integration for secure transactions at the discounted total
+- Booking summary with selected seats, discount line item, and final payable amount
 
 ### 📧 Email + PDF Ticket
 - Booking confirmation sent via email
@@ -93,6 +96,7 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 | **Movie Management**| Add, edit, delete, search movies                      | Browse, search, filter movies                         |
 | **Show Management** | Add, edit, delete shows                               | View shows, book tickets                              |
 | **Booking Management**| View all bookings, delete, view user info          | View, delete own bookings, download PDF               |
+| **Coupons & Promos**| Configure promotional discount codes                   | Validate and apply promo codes at checkout             |
 | **Profile Management**| (Optional)                                          | Update profile, change password, OTP reset            |
 | **Payments**        | View revenue stats                                    | Razorpay checkout for booking                         |
 | **Email Integration**| Optional for alerts                                  | Confirmation emails for bookings & reset              |
@@ -106,5 +110,9 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - Passwords encrypted using BCrypt
 - OTP-based password recovery
 - Admin features protected by role-based access control
+- Server-side price recalculation and coupon verification to prevent tampering
 
 ---
+
+## 📋 Completed Backlog
+- [x] **KAN-13**: Coupon & Promotional Discount Engine (validation, recalculation, modal UI, and living docs)
