@@ -11,20 +11,37 @@
 - Dynamic Admin Dashboard with revenue, booking stats
 - User dashboard with carousels and movie discovery
 - Interactive seat selection and Razorpay integration
-- Email ticket confirmation and PDF download
-- Responsive UI with Bootstrap
+- **Promotional Coupon Engine (KAN-13)**: Percentage and flat discounts, spend thresholds, usage limits, case-insensitive coupon validation, and server-side discount recalculation
+- Email ticket confirmation and PDF download with QR Code
+- Responsive UI with Bootstrap 5
 - Secure login and password reset via OTP
 
 ---
 
 ## 🛠️ Technologies Used
 
-- **Backend:** Spring Boot, Java, Spring Security
-- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5
-- **Database:** MySQL/PostgreSQL
-- **Email & PDF:** JavaMailSender, iText/Apache PDFBox, ZXing for QR Code
+- **Backend:** Spring Boot, Java, Spring Security, Spring Data JPA
+- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5, jQuery
+- **Database:** PostgreSQL / MySQL
+- **Email & PDF:** JavaMailSender, iText / LibrePDF OpenPDF, ZXing for QR Code
 - **Payment:** Razorpay integration
-- **Security:** Role-based login, OTP password reset
+- **Security:** Role-based access control, BCrypt encryption, OTP password reset
+
+---
+
+## 🎟️ Coupon & Promotional Discount Engine (KAN-13)
+
+Users can apply promotional coupon codes during checkout to receive percentage or flat-rate savings.
+
+### Key Capabilities:
+- **Case-Insensitive Promo Codes:** Codes like `SAVE20` and `save20` are handled seamlessly.
+- **Dynamic Real-Time UI Preview:** Validates code against active dates, usage limits, and minimum spend requirements directly from the booking modal.
+- **Server-Side Price Tamper Prevention:** The booking creation endpoint (`POST /user/bookings`) recalculates all discounts on the server before persisting the booking and generating payment orders.
+- **Usage Tracking:** Atomically tracks coupon redemption counts against configured limits.
+
+### API Endpoints:
+- `POST /user/coupons/validate`: Validates coupon code and returns discount and payable totals.
+- `POST /user/bookings`: Confirms reservation with server-validated coupon discounts.
 
 ---
 
@@ -67,14 +84,15 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - Filter by genre or search by name
 - View detailed movie pages with cast, synopsis, shows
 
-### 🎫 Booking Flow
-- Interactive seat layout: select, view price, and pay
-- Razorpay integration for secure transactions
-- Booking summary with selected seats and total amount
+### 🎫 Booking & Coupon Flow
+- Interactive seat layout: select seats, view running total
+- Coupon redemption with instant discount breakdown
+- Razorpay integration for secure transactions on discounted total
+- Booking summary with selected seats, discount line item, and final total
 
 ### 📧 Email + PDF Ticket
-- Booking confirmation sent via email
-- PDF ticket available for download anytime
+- Booking confirmation sent via email with PDF ticket attached
+- PDF ticket available for download anytime with QR Code
 
 ### 👤 Profile Management
 - Update personal details and password
@@ -92,19 +110,18 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 | **Dashboard**       | View stats, recent movies/shows/bookings              | View carousels, top movies, upcoming releases         |
 | **Movie Management**| Add, edit, delete, search movies                      | Browse, search, filter movies                         |
 | **Show Management** | Add, edit, delete shows                               | View shows, book tickets                              |
-| **Booking Management**| View all bookings, delete, view user info          | View, delete own bookings, download PDF               |
+| **Promotions**      | Manage promotional campaigns                          | Apply promo codes, view discounts                     |
+| **Booking Management**| View all bookings, delete, view user info          | View, cancel own bookings, download PDF               |
 | **Profile Management**| (Optional)                                          | Update profile, change password, OTP reset            |
-| **Payments**        | View revenue stats                                    | Razorpay checkout for booking                         |
-| **Email Integration**| Optional for alerts                                  | Confirmation emails for bookings & reset              |
+| **Payments**        | View revenue stats                                    | Razorpay checkout with discounted totals              |
+| **Email Integration**| Alerts and notifications                             | Confirmation emails with PDF attachment               |
 | **Security**        | Role-based control, session handling                  | Secure login, OTP reset                               |
 
 ---
 
 ## 🔐 Security Highlights
 
-- JWT or session-based login
+- Role-based access control (`ROLE_ADMIN`, `ROLE_USER`)
 - Passwords encrypted using BCrypt
 - OTP-based password recovery
-- Admin features protected by role-based access control
-
----
+- Server-side price recalculation preventing client tampering

@@ -7,6 +7,17 @@ public class BookingRequest {
 
 	private int seatCount;
 
+	private String couponCode;
+
+	public BookingRequest() {
+	}
+
+	public BookingRequest(Long showId, String seatNumbers, String couponCode) {
+		this.showId = showId;
+		this.seatNumbers = seatNumbers;
+		this.couponCode = couponCode;
+	}
+
 	// Getters and setters
 	public Long getShowId() {
 		return showId;
@@ -30,5 +41,13 @@ public class BookingRequest {
 
 	public void setSeatCount(int seatCount) {
 		this.seatCount = seatCount;
+	}
+
+	public String getCouponCode() {
+		return couponCode;
+	}
+
+	public void setCouponCode(String couponCode) {
+		this.couponCode = couponCode;
 	}
 }
