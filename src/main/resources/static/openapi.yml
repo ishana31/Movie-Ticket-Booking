@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic REST API
+  description: Movie Ticket Booking Application API Specification
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /user/coupons/validate:
+    post:
+      summary: Validate a promotional coupon code
+      description: Validates coupon validity, expiry, usage limits, and minimum booking threshold against total amount.
+      tags:
+        - Coupons
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - totalAmount
+              properties:
+                code:
+                  type: string
+                  example: SAVE20
+                totalAmount:
+                  type: number
+                  format: double
+                  example: 500.0
+      responses:
+        '200':
+          description: Coupon successfully applied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+                    example: true
+                  discountAmount:
+                    type: number
+                    format: double
+                    example: 100.0
+                  finalAmount:
+                    type: number
+                    format: double
+                    example: 400.0
+                  couponCode:
+                    type: string
+                    example: SAVE20
+        '400':
+          description: Invalid, expired, or unmet spend requirements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid or expired coupon code
+
+  /user/bookings:
+    post:
+      summary: Create a new booking
+      description: Persists seat reservation, server-side recalculates coupon discounts, increments coupon usage, and triggers PDF confirmation email.
+      tags:
+        - Bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - showId
+                - seatNumbers
+              properties:
+                showId:
+                  type: integer
+                  format: int64
+                  example: 1
+                seatNumbers:
+                  type: string
+                  example: "A1,A2"
+                couponCode:
+                  type: string
+                  nullable: true
+                  example: SAVE20
+      responses:
+        '200':
+          description: Booking successfully confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookingId:
+                    type: integer
+                    format: int64
+                    example: 1
+                  totalAmount:
+                    type: number
+                    format: double
+                    example: 400.0
+                  discountAmount:
+                    type: number
+                    format: double
+                    example: 100.0
+        '400':
+          description: Invalid booking parameters or invalid coupon code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid or expired coupon code
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Retrieve occupied seats for a show
+      tags:
+        - Shows
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of booked seat labels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "A1"
+
+  /getTransaction/{amount}:
+    get:
+      summary: Create Razorpay transaction order
+      tags:
+        - Payment
+      parameters:
+        - name: amount
+          in: path
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Transaction order details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                  amount:
+                    type: number
+                  currency:
+                    type: string
+                  key:
+                    type: string

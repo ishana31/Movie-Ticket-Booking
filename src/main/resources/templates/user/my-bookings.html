@@ -28,15 +28,11 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: var(--light);
-      /* background: linear-gradient(rgba(10, 10, 42, 0.95), rgba(10, 10, 42, 0.9)), 
-                  url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover fixed; */
       color: white;
       padding-top: var(--header-height);
       min-height: 100vh;
     }
-
     
-    /* Navbar */
     /* Navbar */
     .navbar {
       background-color: rgba(10, 10, 42, 0.9);
@@ -297,7 +293,6 @@
       box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
     }
     
-    /* No Bookings State */
     .no-bookings {
       text-align: center;
       padding: 60px 20px;
@@ -329,7 +324,6 @@
       box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
     }
     
-    /* Footer */
     .footer {
       background: rgba(10, 10, 42, 0.9);
       color: white;
@@ -423,7 +417,6 @@
       font-size: 0.9rem;
     }
     
-    /* Logout Modal Styles */
 .custom-modal {
     display: none;
     position: fixed;
@@ -498,7 +491,6 @@
     box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
 }
 
-/* Search Bar Styles */
 .search-bar {
     position: relative;
     max-width: 300px;
@@ -539,7 +531,6 @@
     }
 }
     
-    /* Responsive */
     @media (max-width: 768px) {
       .booking-card {
         flex-direction: column;
@@ -588,15 +579,6 @@
       .page-title {
         font-size: 2rem;
       }
-    }
-    
-    /* Particle animation */
-    .particle {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: -1;
     }
   </style>
 </head>
@@ -670,7 +652,7 @@
 
     <div id="bookingsContainer">
       <div th:each="booking : ${bookings}" class="booking-card animate__animated animate__fadeIn" 
-           th:id="'booking-' + ${booking.id}" style="animation-delay: '${bookingStat.index * 0.1}'">
+           th:id="'booking-' + ${booking.id}">
         <div class="movie-poster-container">
           <img th:src="@{'/user/movies/image/' + ${booking.show.movie.id}}"
             class="movie-poster" th:alt="${booking.show.movie.title}"
@@ -708,6 +690,14 @@
             <div>
               <strong><i class="bi bi-currency-rupee"></i> Total:</strong> 
               ₹<span th:text="${#numbers.formatDecimal(booking.totalAmount, 1, 2)}"></span>
+            </div>
+            <div th:if="${booking.couponCode != null and !booking.couponCode.isEmpty()}">
+              <strong><i class="bi bi-ticket-perforated"></i> Coupon:</strong> 
+              <span th:text="${booking.couponCode}"></span>
+            </div>
+            <div th:if="${booking.discountAmount > 0}">
+              <strong><i class="bi bi-percent"></i> Discount:</strong> 
+              ₹<span th:text="${#numbers.formatDecimal(booking.discountAmount, 1, 2)}"></span>
             </div>
           </div>
         </div>
@@ -826,16 +816,13 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-	//Logout Modal Functionality
 	  document.addEventListener('DOMContentLoaded', function() {
-	    // Highlight current page in navbar
 	    $('.nav-link').each(function() {
 	        if ($(this).attr('href') === window.location.pathname) {
 	            $(this).addClass('active');
 	        }
 	    });
 	    
-	    // Initialize modal elements
 	    const modals = {
 	        download: document.getElementById('downloadModal'),
 	        cancel: document.getElementById('cancelModal'),
@@ -845,29 +832,24 @@
 	    let currentBookingId = null;
 	    let downloadUrl = null;
 	    
-	    // Event delegation for dynamic buttons
 	    document.addEventListener('click', function(e) {
-	        // Download button handler
 	        if (e.target.closest('.download-btn')) {
 	            e.preventDefault();
 	            downloadUrl = e.target.closest('.download-btn').getAttribute('href');
 	            showModal('download');
 	        }
 	        
-	        // Cancel button handler
 	        if (e.target.closest('.cancel-btn')) {
 	            currentBookingId = e.target.closest('.cancel-btn').getAttribute('data-booking-id');
 	            showModal('cancel');
 	        }
 	        
-	        // Logout button handler
 	        if (e.target.closest('#logoutBtn')) {
 	            e.preventDefault();
 	            showModal('logout');
 	        }
 	    });
 	    
-	    // Modal button handlers
 	    document.getElementById('downloadCancel').addEventListener('click', () => hideModal('download'));
 	    document.getElementById('downloadConfirm').addEventListener('click', handleDownload);
 	    document.getElementById('cancelNo').addEventListener('click', () => hideModal('cancel'));
@@ -875,14 +857,12 @@
 	    document.getElementById('logoutNo').addEventListener('click', () => hideModal('logout'));
 	    document.getElementById('logoutYes').addEventListener('click', () => window.location.href = '/logout');
 	    
-	    // Close modals when clicking outside
 	    Object.values(modals).forEach(modal => {
 	        modal.addEventListener('click', function(e) {
 	            if (e.target === modal) hideModal(modal.id.replace('Modal', ''));
 	        });
 	    });
 	    
-	    // Close modals with ESC key
 	    document.addEventListener('keydown', function(e) {
 	        if (e.key === 'Escape') {
 	            Object.keys(modals).forEach(key => {
@@ -891,7 +871,6 @@
 	        }
 	    });
 	    
-	    // Modal control functions
 	    function showModal(modalName) {
 	        modals[modalName].style.display = 'flex';
 	        document.body.style.overflow = 'hidden';
@@ -902,7 +881,6 @@
 	        document.body.style.overflow = 'auto';
 	    }
 	    
-	    // Action handlers
 	    function handleDownload() {
 	        const btn = document.getElementById('downloadConfirm');
 	        btn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i> Preparing...';
@@ -921,7 +899,6 @@
 	        btn.innerHTML = '<i class="bi bi-arrow-clockwise animate-spin"></i> Processing...';
 	        btn.disabled = true;
 	        
-	        // Simulate API call
 	        setTimeout(() => {
 	            const bookingElement = document.getElementById(`booking-${currentBookingId}`);
 	            if (bookingElement) {
@@ -930,7 +907,6 @@
 	                    bookingElement.remove();
 	                    showNotification('Booking cancelled successfully!', 'success');
 	                    
-	                    // Show empty state if no bookings left
 	                    if (document.querySelectorAll('.booking-card').length === 0) {
 	                        document.querySelector('#bookingsContainer').innerHTML = `
 	                            <div class="no-bookings animate__animated animate__fadeIn">
@@ -950,7 +926,6 @@
 	        }, 2000);
 	    }
 	    
-	    // Notification system
 	    function showNotification(message, type = 'success') {
 	        const icon = type === 'success' 
 	            ? 'bi-check-circle-fill text-success' 
@@ -973,7 +948,6 @@
 	        }, 3000);
 	    }
 	    
-	    // Add animation styles
 	    const style = document.createElement('style');
 	    style.innerHTML = `
 	        @keyframes spin {
@@ -1006,9 +980,7 @@
 	});
   </script>
   <script>
-//Search Functionality
   $(document).ready(function() {
-      // Initialize search functionality
       $('#searchInput').on('input', function() {
           const searchTerm = $(this).val().toLowerCase();
           
@@ -1026,7 +998,6 @@
               }
           });
           
-          // Show empty state if no results found
           const visibleCards = $('.booking-card:visible').length;
           if (visibleCards === 0) {
               $('#bookingsContainer').append(`
@@ -1041,12 +1012,10 @@
           }
       });
       
-      // Clear search button handler (event delegation for dynamically added button)
       $(document).on('click', '.clear-search', function() {
           $('#searchInput').val('').trigger('input');
       });
       
-      // Add styles for no-results message
       const style = document.createElement('style');
       style.innerHTML = `
           .no-results {
