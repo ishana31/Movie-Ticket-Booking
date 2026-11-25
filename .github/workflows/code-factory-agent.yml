@@ -1,0 +1,55 @@
+name: 'CodeFactoryAgent'
+
+on:
+  # Manual Trigger from GitHub UI with customizable parameters
+  workflow_dispatch:
+    inputs:
+      jira_ticket_number:
+        description: 'Jira Ticket Number (e.g. KAN-4 or DEMO-1)'
+        required: true
+        type: string
+      gemini_model:
+        description: 'Gemini model name'
+        required: false
+        type: choice
+        options:
+          - 'gemini-3.8-flash'
+          - 'gemini-2.5-flash'
+          - 'gemini-2.5-pro'
+        default: 'gemini-3.8-flash'
+      dry_run:
+        description: 'Simulate git push and PR creation without modifying remote repository'
+        required: false
+        type: boolean
+        default: false
+      mock_mode:
+        description: 'Run in offline mock mode (testing without live credentials)'
+        required: false
+        type: boolean
+        default: false
+      java_version:
+        description: 'Java runtime version for target app'
+        required: false
+        type: string
+        default: '21'
+
+  # Automated Trigger via Jira Webhook
+  repository_dispatch:
+    types: [jira_ticket_ready]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  run-code-factory-agent:
+    name: 'Run CodeFactoryAgent'
+    uses: anoopt-2026/code-factory/.github/workflows/agent-runner.yml@main
+    with:
+      jira_ticket_number: ${{ inputs.jira_ticket_number || github.event.client_payload.jira_ticket_number || github.event.client_payload.ticket_number }}
+      gemini_model: ${{ inputs.gemini_model || github.event.client_payload.gemini_model || 'gemini-2.5-flash' }}
+      dry_run: ${{ inputs.dry_run || github.event.client_payload.dry_run || false }}
+      mock_mode: ${{ inputs.mock_mode || github.event.client_payload.mock_mode || false }}
+      java_version: ${{ inputs.java_version || github.event.client_payload.java_version || '21' }}
+    secrets: inherit
