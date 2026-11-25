@@ -52,4 +52,9 @@ jobs:
       dry_run: ${{ inputs.dry_run || github.event.client_payload.dry_run || false }}
       mock_mode: ${{ inputs.mock_mode || github.event.client_payload.mock_mode || false }}
       java_version: ${{ inputs.java_version || github.event.client_payload.java_version || '21' }}
-    secrets: inherit
+    secrets:
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      GH_PAT: ${{ secrets.GH_PAT }}
