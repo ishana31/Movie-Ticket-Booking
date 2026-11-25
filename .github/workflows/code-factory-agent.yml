@@ -45,7 +45,7 @@ permissions:
 jobs:
   run-code-factory-agent:
     name: 'Run CodeFactoryAgent'
-    uses: anoopt-2026/code-factory/.github/workflows/agent-runner.yml@feat/add-github-workflow
+    uses: anoopt-2026/code-factory/.github/workflows/agent-runner.yml@feature/codegraph-integration
     with:
       jira_ticket_number: ${{ inputs.jira_ticket_number || github.event.client_payload.jira_ticket_number || github.event.client_payload.ticket_number }}
       gemini_model: ${{ inputs.gemini_model || github.event.client_payload.gemini_model || 'gemini-2.5-flash' }}
