@@ -11,18 +11,39 @@
 - Dynamic Admin Dashboard with revenue, booking stats
 - User dashboard with carousels and movie discovery
 - Interactive seat selection and Razorpay integration
+- **Coupon & Promotional Discount Engine** (Percentage & Flat discounts with server-side validation)
 - Email ticket confirmation and PDF download
 - Responsive UI with Bootstrap
 - Secure login and password reset via OTP
 
 ---
 
+## 🎟️ Coupon & Promotional Discount Engine
+
+MovieMatic features a server-validated promotional discount engine:
+- **Coupon Models**: Supports `PERCENTAGE` (e.g., `SAVE20` for 20% off) and `FLAT` rate discounts (e.g., `FLAT50`).
+- **Server-Side Price Authority**: Discounts are recalculated server-side during booking creation to prevent client-side tampering.
+- **Constraints & Thresholds**:
+  - Expiration dates (`valid_until`)
+  - Platform-wide redemption caps (`usage_limit` and `used_count`)
+  - Minimum gross booking threshold (`min_order_amount`)
+  - Case-insensitive promo code lookup (`save20` == `SAVE20`)
+- **Interactive UI**:
+  - Checkout modal coupon input with instant "Apply" feedback
+  - Real-time line-item discount display and updated payable total
+  - Informative alerts for expired, invalid, or unmet threshold conditions
+- **REST Endpoints**:
+  - `POST /user/coupons/validate`: Validates code and previews discounts.
+  - `POST /user/bookings`: Submits booking with recalculation and usage tracking.
+
+---
+
 ## 🛠️ Technologies Used
 
-- **Backend:** Spring Boot, Java, Spring Security
-- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5
-- **Database:** MySQL/PostgreSQL
-- **Email & PDF:** JavaMailSender, iText/Apache PDFBox, ZXing for QR Code
+- **Backend:** Spring Boot, Java, Spring Security, Spring Data JPA
+- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap 5, jQuery
+- **Database:** PostgreSQL / MySQL
+- **Email & PDF:** JavaMailSender, iText/OpenPDF, ZXing for QR Code
 - **Payment:** Razorpay integration
 - **Security:** Role-based login, OTP password reset
 
@@ -67,10 +88,11 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - Filter by genre or search by name
 - View detailed movie pages with cast, synopsis, shows
 
-### 🎫 Booking Flow
+### 🎫 Booking Flow & Discounts
 - Interactive seat layout: select, view price, and pay
+- Real-time promo code validation and discount application
 - Razorpay integration for secure transactions
-- Booking summary with selected seats and total amount
+- Booking summary with selected seats, discount details, and total amount
 
 ### 📧 Email + PDF Ticket
 - Booking confirmation sent via email
@@ -85,18 +107,17 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 
 ---
 
-## 🧾 Summary Table – Admin vs. User
+## 📋 Completed Backlog Scope
 
-| Feature/Section     | Admin Capabilities                                    | User Capabilities                                      |
-|---------------------|--------------------------------------------------------|--------------------------------------------------------|
-| **Dashboard**       | View stats, recent movies/shows/bookings              | View carousels, top movies, upcoming releases         |
-| **Movie Management**| Add, edit, delete, search movies                      | Browse, search, filter movies                         |
-| **Show Management** | Add, edit, delete shows                               | View shows, book tickets                              |
-| **Booking Management**| View all bookings, delete, view user info          | View, delete own bookings, download PDF               |
-| **Profile Management**| (Optional)                                          | Update profile, change password, OTP reset            |
-| **Payments**        | View revenue stats                                    | Razorpay checkout for booking                         |
-| **Email Integration**| Optional for alerts                                  | Confirmation emails for bookings & reset              |
-| **Security**        | Role-based control, session handling                  | Secure login, OTP reset                               |
+- [x] **KAN-12**: Coupon & Promotional Discount Engine
+  - [x] Database table `coupons` with type, value, expiry, threshold, limit, and active state
+  - [x] Booking entity updated with `coupon_code` and `discount_amount`
+  - [x] `CouponRepository` with `findByCodeIgnoreCaseAndIsActiveTrue`
+  - [x] `CouponService` with percentage/flat calculations, minimum spend, expiry, and usage limits
+  - [x] Checkout modal UI with promo code entry, "Apply" button, real-time feedback, and alerts
+  - [x] `POST /user/coupons/validate` endpoint
+  - [x] `POST /user/bookings` endpoint returning `{ bookingId, totalAmount, discountAmount }`
+  - [x] Automated unit and integration tests
 
 ---
 
@@ -106,5 +127,4 @@ The **User** experiences a smooth, engaging interface to explore and book movie 
 - Passwords encrypted using BCrypt
 - OTP-based password recovery
 - Admin features protected by role-based access control
-
----
+- Discounts strictly verified server-side before persisting bookings
