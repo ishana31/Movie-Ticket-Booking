@@ -28,10 +28,6 @@
 
 body {
 	font-family: 'Poppins', sans-serif;
-	/* background: linear-gradient(rgba(10, 10, 42, 0.95),
-        rgba(10, 10, 42, 0.9)),
-        url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1950&q=80')
-        no-repeat center center/cover fixed; */
 	background: var(--light);
 	color: white;
 	padding-top: var(--header-height);
@@ -138,6 +134,7 @@ body {
 	z-index: 1;
 	padding-bottom: 50px;
 }
+
 /* Movie Info & Booking Summary */
 .movie-info, .seat-layout, .booking-summary {
 	background: rgba(255, 255, 255, 0.1);
@@ -148,13 +145,12 @@ body {
 	transition: all 0.3s ease;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-	color: white; /* Ensure text is visible */
+	color: white;
 }
 
 .movie-info {
 	padding: 30px;
-	margin-top: calc(var(--header-height)+ 20px);
-	/* Adjust for fixed header */
+	margin-top: calc(var(--header-height) + 20px);
 }
 
 .movie-poster img {
@@ -211,6 +207,7 @@ body {
 .show-details strong {
 	color: var(--primary);
 }
+
 /* Seat Layout */
 .seat-layout {
 	padding: 30px;
@@ -265,7 +262,7 @@ body {
 	transform: translateY(-3px);
 	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
 }
-/* Updated colors as requested */
+
 .legend-box.available {
 	background-color: rgba(255, 255, 255, 0.15);
 }
@@ -275,7 +272,7 @@ body {
 }
 
 .legend-box.booked {
-	background-color: var(--dark); /* Yellow for booked */
+	background-color: var(--dark);
 }
 
 .seat-container {
@@ -283,7 +280,7 @@ body {
 	flex-direction: column;
 	align-items: center;
 	margin-top: 30px;
-	overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
+	overflow-x: auto;
 	padding-bottom: 15px;
 }
 
@@ -312,7 +309,6 @@ body {
 	align-items: center;
 	justify-content: center;
 	background-color: rgba(255, 255, 255, 0.15);
-	/* Available seats - transparent */
 	border: 1px solid var(--dark);
 	border-radius: 8px;
 	cursor: pointer;
@@ -330,7 +326,6 @@ body {
 
 .seat.selected {
 	background: linear-gradient(45deg, var(--primary), #ff6b3d);
-	/* Selected seats - same as before */
 	color: white;
 	transform: scale(1.05);
 	box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
@@ -338,13 +333,14 @@ body {
 }
 
 .seat.booked {
-	background-color: var(--dark); /* Booked seats - yellow */
-	color: white; /* Dark text for yellow background */
+	background-color: var(--dark);
+	color: white;
 	cursor: not-allowed;
 	opacity: 0.8;
 	pointer-events: none;
 	border-color: rgba(255, 204, 0, 0.4);
 }
+
 /* Booking Summary */
 .booking-summary .card-body {
 	padding: 30px;
@@ -359,7 +355,6 @@ body {
 	background-clip: text;
 	color: transparent;
 	display: inline-block;
-	margin-bottom: 20px;
 }
 
 .summary-item {
@@ -405,12 +400,10 @@ body {
 	transform: translateY(-3px);
 	box-shadow: 0 8px 20px rgba(255, 87, 51, 0.6);
 	background: linear-gradient(45deg, #ff6b3d, var(--primary));
-	/* Slight change on hover */
 }
 
 #payNowButton {
 	background: linear-gradient(45deg, #28a745, #218838);
-	/* Green for success */
 	box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
 }
 
@@ -418,6 +411,7 @@ body {
 	background: linear-gradient(45deg, #218838, #28a745);
 	box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
 }
+
 /* Modals */
 .modal-content {
 	background: rgba(10, 10, 42, 0.98);
@@ -438,7 +432,7 @@ body {
 }
 
 .modal-header .btn-close {
-	filter: invert(1); /* Makes the close button white */
+	filter: invert(1);
 }
 
 .modal-body {
@@ -463,6 +457,13 @@ body {
 
 .confirmation-detail strong {
 	color: var(--secondary);
+}
+
+.coupon-section {
+	background-color: rgba(255, 255, 255, 0.05);
+	padding: 15px;
+	border-radius: 10px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-footer {
@@ -495,8 +496,8 @@ body {
 
 .modal-body .bi-check-circle-fill {
 	color: var(--primary) !important;
-	/* Ensure primary color for success icon */
 }
+
 /* Footer */
 .footer {
 	background: rgba(10, 10, 42, 0.9);
@@ -594,14 +595,6 @@ body {
 	color: rgba(255, 255, 255, 0.5);
 	font-size: 0.9rem;
 }
-/* Particle animation - added to original CSS for consistency */
-.particle {
-	position: absolute;
-	background: rgba(255, 255, 255, 0.8);
-	border-radius: 50%;
-	pointer-events: none;
-	z-index: -1;
-}
 
 .custom-modal {
 	display: none;
@@ -617,7 +610,7 @@ body {
 	backdrop-filter: blur(5px);
 }
 
-.modal-content {
+.modal-content-logout {
 	background: rgba(10, 10, 42, 0.95);
 	padding: 2rem;
 	border-radius: 12px;
@@ -628,7 +621,7 @@ body {
 	text-align: center;
 }
 
-.modal-content h5 {
+.modal-content-logout h5 {
 	font-size: 1.5rem;
 	margin-bottom: 1rem;
 	color: white;
@@ -638,7 +631,7 @@ body {
 	gap: 10px;
 }
 
-.modal-content p {
+.modal-content-logout p {
 	color: rgba(255, 255, 255, 0.8);
 	margin-bottom: 1.5rem;
 }
@@ -678,7 +671,7 @@ body {
 }
 
 /* Responsive adjustments */
-@media ( max-width : 768px) {
+@media (max-width: 768px) {
 	.navbar-brand {
 		font-size: 1.5rem;
 	}
@@ -687,10 +680,6 @@ body {
 	}
 	.nav-link {
 		padding: 8px 15px;
-	}
-	.search-bar {
-		width: 100%;
-		margin-bottom: 15px;
 	}
 	.movie-info .col-md-3, .movie-info .col-md-9 {
 		flex: 0 0 100%;
@@ -870,8 +859,7 @@ body {
 					<span><strong>Total Seats:</strong></span> <span id="totalSeats">0</span>
 				</div>
 				<div class="summary-item">
-					<span><strong>Total Amount:</strong></span> <span id="totalAmount">₹
-						0</span>
+					<span><strong>Total Amount:</strong></span> <span id="totalAmount">₹ 0.00</span>
 				</div>
 				<button class="btn btn-primary btn-confirm btn-lg w-100 mt-4"
 					id="confirmBooking">Confirm Booking</button>
@@ -908,15 +896,28 @@ body {
 						<div class="confirmation-detail">
 							<strong>Seats:</strong> <span id="confirmSeats"></span>
 						</div>
+						<div class="confirmation-detail" id="discountDetailRow" style="display: none;">
+							<strong>Discount:</strong> <span id="confirmDiscount" style="color: #28a745; font-weight: 600;">- ₹0.00</span>
+						</div>
 						<div class="confirmation-detail">
 							<strong>Total Amount:</strong> <span id="confirmAmount"></span>
 						</div>
+					</div>
+
+					<!-- Coupon / Promo Code Section -->
+					<div class="coupon-section mt-3 text-start">
+						<label for="couponCodeInput" class="form-label text-white-50 mb-1" style="font-size: 0.9rem;">Promo Code</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="couponCodeInput" placeholder="Enter coupon code (e.g. SAVE20)" style="text-transform: uppercase;">
+							<button class="btn btn-primary" type="button" id="applyCouponBtn">Apply</button>
+						</div>
+						<div id="couponMessage" class="mt-2 text-success" style="display: none; font-size: 0.95rem; font-weight: 500;"></div>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary"
 						data-bs-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-primary" id="finalConfirm">Confirm</button>
+					<button type="button" class="btn btn-primary" id="finalConfirm">Proceed to Payment</button>
 				</div>
 			</div>
 		</div>
@@ -945,7 +946,6 @@ body {
 			</div>
 		</div>
 	</div>
-
 
 	<footer class="footer">
 		<div class="container">
@@ -1004,7 +1004,7 @@ body {
 
 	<!-- Logout Confirmation Modal -->
 	<div id="logoutModal" class="custom-modal">
-		<div class="modal-content">
+		<div class="modal-content-logout">
 			<h5>
 				<i class="bi bi-box-arrow-right text-primary"></i> Confirm Logout
 			</h5>
@@ -1020,7 +1020,7 @@ body {
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 	<script>
 const showId = "[[${show.id}]]";
-const seatPrice = "[[${show.price}]]";
+const seatPrice = parseFloat("[[${show.price}]]");
 const movieTitle = "[[${movie.title}]]";
 const showTime = "[[${show.showTime}]]";
 const showDate = "[[${#temporals.format(show.showDate, 'dd MMM yyyy')}]]";
@@ -1034,6 +1034,9 @@ const screen = "[[${show.screen}]]";
 $(document).ready(function () {
   let selectedSeats = [];
   let bookingId = null;
+  let appliedCouponCode = null;
+  let appliedDiscountAmount = 0.0;
+  let currentFinalAmount = 0.0;
 
   // Generate Seat Layout
   const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -1077,23 +1080,84 @@ $(document).ready(function () {
     $('#totalAmount').text(`₹ ${totalAmount.toFixed(2)}`);
   }
 
+  function resetCouponState() {
+    appliedCouponCode = null;
+    appliedDiscountAmount = 0.0;
+    const originalTotal = selectedSeats.length * seatPrice;
+    currentFinalAmount = originalTotal;
+    $('#couponCodeInput').val('');
+    $('#couponMessage').hide().text('');
+    $('#discountDetailRow').hide();
+    $('#confirmAmount').text(`₹ ${originalTotal.toFixed(2)}`);
+  }
+
   $('#confirmBooking').click(function () {
     if (selectedSeats.length === 0) {
       alert('Please select at least one seat');
       return;
     }
+    const originalTotal = selectedSeats.length * seatPrice;
     $('#confirmMovie').text(movieTitle);
     $('#confirmShow').text(`${screen} - ${showDate} (${showTime})`);
     $('#confirmSeats').text(selectedSeats.join(', '));
-    $('#confirmAmount').text(`₹ ${(selectedSeats.length * seatPrice).toFixed(2)}`);
+    resetCouponState();
+
     const bookingModal = new bootstrap.Modal(document.getElementById('bookingConfirmationModal'));
     bookingModal.show();
   });
 
+  // Apply Coupon Handler
+  $('#applyCouponBtn').click(function () {
+    const code = $('#couponCodeInput').val().trim();
+    if (!code) {
+      alert('Invalid or expired coupon code.');
+      return;
+    }
+
+    const currentTotal = selectedSeats.length * seatPrice;
+
+    $.ajax({
+      url: '/user/coupons/validate',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        code: code,
+        totalAmount: currentTotal
+      }),
+      success: function (data) {
+        if (data && data.valid) {
+          appliedCouponCode = code.toUpperCase();
+          appliedDiscountAmount = data.discountAmount;
+          currentFinalAmount = data.finalAmount;
+
+          $('#couponMessage')
+            .text(`Coupon '${appliedCouponCode}' applied! You saved ₹${appliedDiscountAmount.toFixed(2)}`)
+            .show();
+
+          $('#confirmDiscount').text(`- ₹${appliedDiscountAmount.toFixed(2)}`);
+          $('#discountDetailRow').show();
+          $('#confirmAmount').text(`₹ ${currentFinalAmount.toFixed(2)}`);
+        } else {
+          resetCouponState();
+          alert('Invalid or expired coupon code.');
+        }
+      },
+      error: function (xhr) {
+        resetCouponState();
+        let errorMsg = 'Invalid or expired coupon code.';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMsg = xhr.responseJSON.message;
+        }
+        alert(errorMsg);
+      }
+    });
+  });
+
   $('#finalConfirm').click(function () {
     const bookingData = {
-      showId: showId,
-      seatNumbers: selectedSeats.join(',')
+      showId: Number(showId),
+      seatNumbers: selectedSeats.join(','),
+      couponCode: appliedCouponCode
     };
 
     $('#finalConfirm').prop('disabled', true);
@@ -1106,14 +1170,20 @@ $(document).ready(function () {
       data: JSON.stringify(bookingData),
       success: function (response) {
         const bookingModal = bootstrap.Modal.getInstance(document.getElementById('bookingConfirmationModal'));
-        bookingModal.hide();
+        if (bookingModal) {
+          bookingModal.hide();
+        }
         bookingId = response.bookingId;
-
-        const totalAmount = selectedSeats.length * seatPrice;
-        handleProceedToPayment({ totalAmount });
+        const totalPayable = response.totalAmount;
+        handleProceedToPayment({ totalAmount: totalPayable });
       },
       error: function (xhr) {
-        const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : xhr.responseText || 'Unknown error';
+        let errorMsg = 'Unknown error';
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMsg = xhr.responseJSON.message;
+        } else if (xhr.responseText) {
+          errorMsg = xhr.responseText;
+        }
         alert('Booking failed: ' + errorMsg);
         $('#finalConfirm').prop('disabled', false);
         $('.loader').hide();
@@ -1131,8 +1201,6 @@ $(document).ready(function () {
   });
 
   function handleProceedToPayment({ totalAmount }) {
-    const amountInPaise = totalAmount * 100;
-
     fetch(`/getTransaction/${totalAmount}`)
       .then(res => {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
@@ -1149,8 +1217,7 @@ $(document).ready(function () {
             description: "Movie Ticket Booking",
             handler: function (response) {
               $('.loader').hide();
-              $('#bookingId').text(bookingId);
-              $('#successSeats').text(selectedSeats.join(', '));
+              $('#finalConfirm').prop('disabled', false);
               const successModal = new bootstrap.Modal(document.getElementById('successModal'));
               successModal.show();
               selectedSeats = [];
@@ -1167,6 +1234,8 @@ $(document).ready(function () {
             },
             modal: {
               ondismiss: function () {
+                $('#finalConfirm').prop('disabled', false);
+                $('.loader').hide();
                 alert("❗ Payment cancelled. Your booking is saved, but payment was not done.");
               }
             }
@@ -1174,27 +1243,28 @@ $(document).ready(function () {
           const rzp = new Razorpay(options);
           rzp.open();
         } else {
+          $('#finalConfirm').prop('disabled', false);
+          $('.loader').hide();
           alert("Error: Razorpay order not created.");
         }
       })
       .catch(error => {
+        $('#finalConfirm').prop('disabled', false);
+        $('.loader').hide();
         console.error("Razorpay error:", error);
         alert("❌ Could not start payment: " + error.message);
       });
   }
 });
 
-//Add this to your existing script section
 document.addEventListener('DOMContentLoaded', function() {
     const logoutModal = document.getElementById('logoutModal');
 
-    // Logout button
     document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
         e.preventDefault();
         logoutModal.style.display = 'flex';
     });
 
-    // Modal buttons
     document.getElementById('logoutNo')?.addEventListener('click', function() {
         logoutModal.style.display = 'none';
     });
@@ -1203,14 +1273,12 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = '/logout';
     });
 
-    // Click outside modal
     logoutModal?.addEventListener('click', function(e) {
         if (e.target === logoutModal) {
             logoutModal.style.display = 'none';
         }
     });
 
-    // Close modal with ESC key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && logoutModal.style.display === 'flex') {
             logoutModal.style.display = 'none';
@@ -1218,7 +1286,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 
 </body>
 </html>
