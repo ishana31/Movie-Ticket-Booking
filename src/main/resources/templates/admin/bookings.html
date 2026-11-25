@@ -96,7 +96,6 @@ body {
 	font-size: 1.2rem; /* Slightly larger icons */
 }
 
-        
         /* Main Content */
         .main-content {
 	margin-left: 250px; /* Matches sidebar width */
@@ -534,6 +533,10 @@ body {
                                 <strong><i class="bi bi-currency-rupee"></i> Total:</strong> 
                                 ₹<span th:text="${#numbers.formatDecimal(booking.totalAmount, 1, 2)}"></span>
                             </div>
+                            <div th:if="${booking.couponCode}">
+                                <strong><i class="bi bi-tag-fill"></i> Coupon:</strong> 
+                                <span th:text="${booking.couponCode} + ' (-₹' + ${#numbers.formatDecimal(booking.discountAmount, 1, 2)} + ')'"></span>
+                            </div>
                             <div th:if="${booking.user.phone}">
                                 <strong><i class="bi bi-telephone"></i> Phone:</strong> 
                                 <span th:text="${booking.user.phone}"></span>
@@ -636,7 +639,6 @@ body {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
@@ -652,7 +654,6 @@ body {
             });
         });
 
-        // User modal functionality
         const userModal = document.getElementById('userModal');
         const viewButtons = document.querySelectorAll('.view-user-btn');
         const closeButtons = document.querySelectorAll('.close-modal');
@@ -704,7 +705,6 @@ body {
             }
         });
 
-        // Delete confirmation modal
         const deleteModal = document.getElementById('deleteModal');
         const deleteButtons = document.querySelectorAll('.delete-booking-btn');
         const cancelDeleteBtn = document.getElementById('cancelDelete');
