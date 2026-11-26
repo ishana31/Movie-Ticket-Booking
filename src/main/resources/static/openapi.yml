@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: MovieMatic API Specification
+  description: REST API specification for MovieMatic cinema booking platform including the Coupon & Promotional Discount Engine.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+paths:
+  /user/coupons/validate:
+    post:
+      summary: Validate a promotional coupon code
+      description: Validates coupon validity, expiry, usage limit, and minimum order amount, and calculates discount.
+      operationId: validateCoupon
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CouponValidationRequest'
+            example:
+              code: "SAVE20"
+              totalAmount: 500.0
+      responses:
+        '200':
+          description: Coupon successfully validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CouponValidationResponse'
+              example:
+                valid: true
+                discountAmount: 100.0
+                finalAmount: 400.0
+        '400':
+          description: Coupon is invalid, expired, or spend threshold unmet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidOrExpired:
+                  value:
+                    message: "Invalid or expired coupon code"
+                thresholdNotMet:
+                  value:
+                    message: "Minimum booking amount of ₹300.00 required."
+
+  /user/bookings:
+    post:
+      summary: Create a movie ticket booking
+      description: Reserves selected seats, applies coupon discount recalculation server-side, and initiates booking.
+      operationId: createBooking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreationRequest'
+            example:
+              showId: 1
+              seatNumbers: "A1,A2"
+              couponCode: "SAVE20"
+      responses:
+        '200':
+          description: Booking successfully confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+              example:
+                bookingId: 1
+                totalAmount: 400.0
+                discountAmount: 100.0
+        '400':
+          description: Invalid booking or coupon parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Booking processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user/shows/{showId}/occupied-seats:
+    get:
+      summary: Get occupied seats for a show
+      operationId: getOccupiedSeats
+      parameters:
+        - name: showId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of booked seat identifiers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example: ["A1", "A2", "B5"]
+
+components:
+  schemas:
+    CouponValidationRequest:
+      type: object
+      required:
+        - code
+        - totalAmount
+      properties:
+        code:
+          type: string
+          description: Promotional code to validate (case-insensitive)
+          example: "SAVE20"
+        totalAmount:
+          type: number
+          format: double
+          description: Total booking subtotal amount prior to discounts
+          example: 500.0
+
+    CouponValidationResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          example: true
+        discountAmount:
+          type: number
+          format: double
+          example: 100.0
+        finalAmount:
+          type: number
+          format: double
+          example: 400.0
+
+    BookingCreationRequest:
+      type: object
+      required:
+        - showId
+        - seatNumbers
+      properties:
+        showId:
+          type: integer
+          format: int64
+          example: 1
+        seatNumbers:
+          type: string
+          description: Comma-separated list of selected seat labels
+          example: "A1,A2"
+        couponCode:
+          type: string
+          nullable: true
+          description: Optional promo code applied during checkout
+          example: "SAVE20"
+
+    BookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          format: int64
+          example: 1
+        totalAmount:
+          type: number
+          format: double
+          example: 400.0
+        discountAmount:
+          type: number
+          format: double
+          example: 100.0
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Invalid or expired coupon code"
