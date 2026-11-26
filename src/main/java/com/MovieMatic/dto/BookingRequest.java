@@ -1,34 +1,71 @@
 package com.MovieMatic.dto;
 
+/**
+ * Data transfer object encapsulating movie ticket booking requests.
+ * Transports show identity, reserved seat numbers, seat count, and an optional coupon promo code.
+ *
+ * @author CodeFactoryAgent
+ */
 public class BookingRequest {
-	private Long showId;
 
-	private String seatNumbers;
+    /**
+     * Unique identifier of the selected movie show.
+     */
+    private Long showId;
 
-	private int seatCount;
+    /**
+     * Comma-separated list of selected seat labels (e.g. 'A1,A2').
+     */
+    private String seatNumbers;
 
-	// Getters and setters
-	public Long getShowId() {
-		return showId;
-	}
+    /**
+     * Number of seats selected for the booking.
+     */
+    private int seatCount;
 
-	public void setShowId(Long showId) {
-		this.showId = showId;
-	}
+    /**
+     * Optional promotional coupon code applied at checkout.
+     */
+    private String couponCode;
 
-	public String getSeatNumbers() {
-		return seatNumbers;
-	}
+    public BookingRequest() {
+    }
 
-	public void setSeatNumbers(String seatNumbers) {
-		this.seatNumbers = seatNumbers;
-	}
+    public BookingRequest(Long showId, String seatNumbers, String couponCode) {
+        this.showId = showId;
+        this.seatNumbers = seatNumbers;
+        this.couponCode = couponCode;
+    }
 
-	public int getSeatCount() {
-		return seatCount;
-	}
+    public Long getShowId() {
+        return showId;
+    }
 
-	public void setSeatCount(int seatCount) {
-		this.seatCount = seatCount;
-	}
+    public void setShowId(Long showId) {
+        this.showId = showId;
+    }
+
+    public String getSeatNumbers() {
+        return seatNumbers;
+    }
+
+    public void setSeatNumbers(String seatNumbers) {
+        this.seatNumbers = seatNumbers;
+    }
+
+    public int getSeatCount() {
+        return seatCount;
+    }
+
+    public void setSeatCount(int seatCount) {
+        this.seatCount = seatCount;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
 }
